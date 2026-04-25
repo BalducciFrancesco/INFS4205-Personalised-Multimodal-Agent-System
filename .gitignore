@@ -1,5 +1,6 @@
 api-key.txt
-thumbnails
+thumbnails/
+chroma_db/
 .vscode/
 
 
