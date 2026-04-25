@@ -1,0 +1,2325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UQ INFS4205/7205 - A3: Personalised Multimodal Agent System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=VT323&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --beige-light: #F0EDE0;
+            --beige-main: #E0DCCF;
+            --beige-dark: #C4C0B3;
+            --beige-shadow: #A09C8F;
+            --screen-black: #222529;
+            --screen-glow: #3E434C;
+            --crt-green: #33ff00;
+            --accent-blue: #2B6CB0;
+            --accent-orange: #C05621;
+            --ink-black: #0f0f0f;
+            --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --content-size: 1.18rem;
+            --content-line-height: 1.6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: #f4f1e6;
+            font-family: var(--font-ui);
+            color: var(--ink-black);
+            min-height: 100vh;
+            width: 100%;
+            overflow-x: hidden;
+            display: block;
+        }
+
+        body,
+        body * {
+            font-family: var(--font-ui) !important;
+        }
+
+        .hero-wrapper {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .main-container {
+            position: relative;
+            width: 100%;
+            max-width: 1400px;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            align-items: center;
+            padding: 4rem;
+        }
+
+        .content-col {
+            padding-right: 2rem;
+            z-index: 10;
+            padding-left: 4rem;
+        }
+
+        .product-col {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 2000px;
+            height: 100%;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 5rem;
+            line-height: 0.85;
+            margin: 0 0 2rem 0;
+            letter-spacing: -2px;
+            font-weight: 500;
+        }
+
+        h1 span {
+            display: block;
+        }
+
+        h1 .italic {
+            font-style: italic;
+            white-space: nowrap;
+            margin-left: -4px;
+        }
+
+        p.lead {
+            font-size: 1.28rem;
+            line-height: 1.65;
+            margin-bottom: 2.5rem;
+            max-width: 480px;
+            color: #444;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--ink-black);
+            color: #f4f1e6;
+            padding: 1rem 2rem;
+            font-size: 1.25rem;
+            text-decoration: none;
+            border-radius: 8px;
+            border: 2px solid var(--ink-black);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            background: transparent;
+            color: var(--ink-black);
+        }
+
+        .price-tag {
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+
+        .specs-grid {
+            margin-top: 4rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            max-width: 400px;
+        }
+
+        .spec-item h4 {
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .spec-item p {
+            margin: 0.5rem 0 0 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .hero-kicker {
+            line-height: 1.05;
+        }
+
+        /* 3D Scene Styles */
+        .scene {
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateY(-15deg) rotateX(5deg);
+            transition: transform 0.5s ease-out;
+        }
+
+        .product-col:hover .scene {
+            transform: rotateY(-5deg) rotateX(2deg);
+        }
+
+        .computer-unit {
+            position: relative;
+            width: 360px;
+            height: 440px;
+            transform-style: preserve-3d;
+        }
+
+        .face {
+            position: absolute;
+            background: var(--beige-main);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .front {
+            width: 360px;
+            height: 440px;
+            transform: translateZ(100px);
+            background: linear-gradient(135deg, var(--beige-light) 0%, var(--beige-main) 100%);
+            border-radius: 0;
+            box-shadow:
+                inset 2px 2px 5px rgba(255, 255, 255, 0.8),
+                inset -5px -5px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 40px;
+        }
+
+        .back {
+            width: 360px;
+            height: 440px;
+            transform: translateZ(-100px) rotateY(180deg);
+            background: var(--beige-dark);
+            border-radius: 0;
+        }
+
+        .left {
+            width: 200px;
+            height: 440px;
+            transform: rotateY(-90deg) translateZ(100px);
+            background: var(--beige-main);
+            border-radius: 0;
+            box-shadow: inset 10px 0 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .right {
+            width: 200px;
+            height: 440px;
+            transform: rotateY(90deg) translateZ(260px);
+            background: var(--beige-dark);
+            border-radius: 0;
+            box-shadow: inset 10px 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .top {
+            width: 360px;
+            height: 200px;
+            transform: rotateX(90deg) translateZ(100px);
+            background: var(--beige-light);
+            border-radius: 0;
+        }
+
+        .bottom {
+            width: 360px;
+            height: 200px;
+            transform: rotateX(-90deg) translateZ(340px);
+            background: var(--beige-shadow);
+            border-radius: 0;
+            box-shadow: 0 50px 80px rgba(0, 0, 0, 0.3);
+        }
+
+        .screen-inset {
+            width: 280px;
+            height: 220px;
+            background: #D1CEC7;
+            border-radius: 16px;
+            box-shadow:
+                inset 2px 2px 8px rgba(0, 0, 0, 0.2),
+                inset -2px -2px 8px rgba(255, 255, 255, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .crt {
+            width: 260px;
+            height: 200px;
+            background: var(--screen-black);
+            border-radius: 40% 40% 40% 40% / 10% 10% 10% 10%;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 1);
+        }
+
+        .crt::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            z-index: 5;
+            pointer-events: none;
+            border-radius: 12px;
+        }
+
+        .crt-glow {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            background: transparent;
+            border-radius: 12px;
+            z-index: 2;
+            color: #fff;
+            font-family: var(--font-mono);
+            padding: 15px;
+            font-size: 14px;
+            text-shadow: 0 0 2px rgba(255, 255, 255, 0.5);
+        }
+
+        .floppy-slot {
+            width: 140px;
+            height: 12px;
+            background: #333;
+            border-radius: 6px;
+            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.5);
+            margin-left: 100px;
+            position: relative;
+        }
+
+        .logo-badge {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            width: 20px;
+            height: 26px;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            background: linear-gradient(180deg, #63B548 0%, #63B548 16.6%, #F6C829 16.6%, #F6C829 33.3%, #E57D25 33.3%, #E57D25 50%, #D83335 50%, #D83335 66.6%, #9C4595 66.6%, #9C4595 83.3%, #468CCF 83.3%, #468CCF 100%);
+            box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-badge::before {
+            content: "";
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 3px;
+            height: 7px;
+            background: #5a3e28;
+            border-radius: 1px;
+        }
+
+        .sticker {
+            position: absolute;
+            z-index: 5;
+            box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            transform-style: flat;
+        }
+
+        .sticker-ball {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-orange);
+            border-radius: 50%;
+            bottom: 88px;
+            left: 20px;
+            background-image:
+                radial-gradient(circle at 10px 10px, rgba(255, 255, 255, 0.2) 2px, transparent 3px),
+                linear-gradient(45deg, transparent 40%, rgba(0, 0, 0, 0.2) 40%, rgba(0, 0, 0, 0.2) 45%, transparent 45%);
+            transform: translateZ(101px) rotate(-10deg);
+        }
+
+        .sticker-star {
+            width: 45px;
+            height: 45px;
+            background: #fff;
+            border-radius: 8px;
+            bottom: 98px;
+            left: 50px;
+            transform: translateZ(102px) rotate(15deg);
+            border: 2px solid #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sticker-star::after {
+            content: '★';
+            color: var(--accent-blue);
+            font-size: 24px;
+        }
+
+        .sticker-text {
+            width: 60px;
+            height: 30px;
+            background: #8B0000;
+            color: #F0E68C;
+            font-family: 'Courier New', courier, monospace;
+            font-size: 6px;
+            line-height: 1.3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            bottom: 64px;
+            left: 100px;
+            transform: translateZ(101px) rotate(-2deg);
+            box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .grill {
+            position: absolute;
+            bottom: 25px;
+            right: 25px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2px;
+            width: 30px;
+            height: 20px;
+        }
+
+        .vent {
+            background: #333;
+            border-radius: 1px;
+            box-shadow: inset 1px 1px 1px rgba(0, 0, 0, 0.5);
+        }
+
+        .keyboard-assembly {
+            position: absolute;
+            width: 360px;
+            height: 140px;
+            bottom: -118px;
+            transform-style: preserve-3d;
+            transform-origin: top center;
+            --kb-angle: 66deg;
+            transform: translateZ(164px) rotateX(var(--kb-angle));
+            --kb-thickness: 18px;
+        }
+
+        .kb-base {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: var(--beige-main);
+            border-radius: 0;
+            box-shadow:
+                inset 1px 1px 2px rgba(255, 255, 255, 0.5),
+                inset -5px -5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateZ(calc(var(--kb-thickness) / 2));
+            overflow: hidden;
+        }
+
+        .kb-front,
+        .kb-back {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: var(--kb-thickness);
+        }
+
+        .kb-front {
+            bottom: 0;
+            background: linear-gradient(180deg, #cdc9bb 0%, #b5b1a3 100%);
+            transform-origin: bottom center;
+            transform: translateZ(calc(var(--kb-thickness) / 2)) rotateX(90deg);
+            border-radius: 0;
+        }
+
+        .kb-back {
+            top: 0;
+            background: linear-gradient(180deg, #e5e1d4 0%, #c9c5b8 100%);
+            transform-origin: top center;
+            transform: translateZ(calc(var(--kb-thickness) / 2)) rotateX(-90deg);
+            border-radius: 0;
+        }
+
+        .kb-left,
+        .kb-right {
+            position: absolute;
+            top: 0;
+            width: var(--kb-thickness);
+            height: 100%;
+            background: linear-gradient(180deg, #d1cdbf 0%, #b7b3a6 100%);
+        }
+
+        .kb-left {
+            left: 0;
+            transform-origin: left center;
+            transform: translateZ(calc(var(--kb-thickness) / 2)) rotateY(90deg);
+            border-radius: 0;
+        }
+
+        .kb-right {
+            right: 0;
+            transform-origin: right center;
+            transform: translateZ(calc(var(--kb-thickness) / 2)) rotateY(-90deg);
+            border-radius: 0;
+        }
+
+        .kb-shadow {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: transparent;
+            transform-origin: top center;
+            transform: rotateX(calc(-90deg - var(--kb-angle))) translateZ(20px);
+            box-shadow:
+                0 40px 70px rgba(0, 0, 0, 0.25),
+                0 20px 30px rgba(0, 0, 0, 0.15);
+            pointer-events: none;
+            border-radius: 12px;
+        }
+
+        .keys-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 6px;
+            padding: 15px;
+            transform: translateZ(8px);
+            transform-style: preserve-3d;
+        }
+
+        .key {
+            height: 27px;
+            background: #ECE8DA;
+            border-radius: 4px;
+            box-shadow:
+                0 6px 0 #C4C0B3,
+                0 8px 7px rgba(0, 0, 0, 0.2);
+            transform: translateZ(1px);
+            transition: transform 0.05s;
+        }
+
+        .key.wide {
+            grid-column: span 2;
+        }
+
+        .key.space {
+            grid-column: span 6;
+        }
+
+        @keyframes typeKey {
+
+            0%,
+            100% {
+                transform: translateZ(1px) translateY(0);
+                box-shadow: 0 6px 0 #C4C0B3, 0 8px 7px rgba(0, 0, 0, 0.2);
+            }
+
+            50% {
+                transform: translateZ(-2px) translateY(5px);
+                box-shadow: 0 1px 0 #C4C0B3, 0 1px 2px rgba(0, 0, 0, 0.05);
+            }
+        }
+
+        .key:nth-child(3n+1) {
+            animation: typeKey 1.5s infinite 0.2s;
+        }
+
+        .key:nth-child(7n) {
+            animation: typeKey 2.1s infinite 0.5s;
+        }
+
+        .key:nth-child(2n+4) {
+            animation: typeKey 1.8s infinite 0.9s;
+        }
+
+        .key:nth-child(5n) {
+            animation: typeKey 2.5s infinite 1.2s;
+        }
+
+        .key:nth-child(4n+2) {
+            animation: typeKey 1.2s infinite 0s;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 15px;
+            background: #fff;
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        .crt-ui {
+            display: flex;
+            height: 100%;
+        }
+
+        .sidebar {
+            width: 30%;
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            font-size: 10px;
+            color: #ccc;
+        }
+
+        .main-area {
+            flex: 1;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .window {
+            background: #fff;
+            color: #000;
+            border-radius: 2px;
+            padding: 5px;
+            margin-top: 10px;
+            box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
+            font-family: var(--font-mono);
+            font-size: 10px;
+        }
+
+        .window-header {
+            border-bottom: 1px dotted #000;
+            margin-bottom: 5px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .icon-list div {
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .icon-circle {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #555;
+        }
+
+        .icon-circle.blue {
+            background: #468CCF;
+        }
+
+        .icon-circle.orange {
+            background: #E57D25;
+        }
+
+        .typing-container {
+            font-size: 12px;
+            line-height: 1.2;
+            color: #333;
+            white-space: pre-wrap;
+        }
+
+        /* Tasksheet Content Styles */
+        .tasks-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 4rem 6rem;
+            font-size: var(--content-size);
+            line-height: var(--content-line-height);
+            position: relative;
+            z-index: 10;
+        }
+
+        .tasks-container p,
+        .tasks-container li,
+        .tasks-container td,
+        .tasks-container blockquote,
+        .tasks-container summary + * {
+            font-size: var(--content-size);
+            line-height: var(--content-line-height);
+        }
+
+        .tasks-container p[style],
+        .tasks-container li[style],
+        .tasks-container span[style],
+        .tasks-container ul[style],
+        .tasks-container div[style] {
+            font-size: var(--content-size) !important;
+            line-height: var(--content-line-height) !important;
+        }
+
+        .tasks-container h2 {
+            font-size: 2.8rem;
+            margin: 4rem 0 1.5rem;
+            border-bottom: 3px solid var(--ink-black);
+            padding-bottom: 0.5rem;
+            font-weight: 600;
+            letter-spacing: -1px;
+        }
+
+        .tasks-container h3 {
+            font-size: 1.8rem;
+            margin: 0 0 1rem;
+            font-weight: 600;
+        }
+
+        .task-card {
+            background: var(--beige-main);
+            border: 2px solid var(--ink-black);
+            padding: 2.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 6px 6px 0 var(--ink-black);
+        }
+
+        .task-card p {
+            margin-bottom: 1.5rem;
+        }
+
+        .task-card p:last-child {
+            margin-bottom: 0;
+        }
+
+        .task-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .task-grid .task-card {
+            margin-bottom: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .task-card ul {
+            margin-left: 2rem;
+            margin-top: 1rem;
+        }
+
+        .task-card li {
+            margin-bottom: 0.8rem;
+        }
+
+        .example-box {
+            background: var(--screen-glow);
+            color: var(--crt-green);
+            padding: 1.2rem;
+            border-radius: 6px;
+            margin-top: auto;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+            font-size: 1.1rem;
+            border: 2px solid var(--ink-black);
+        }
+
+        .task-grid .task-card .example-box {
+            margin-top: 1rem;
+        }
+
+        .badge-mark {
+            background: var(--accent-orange);
+            color: #fff;
+            padding: 0.3rem 0.8rem;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 1rem;
+            border: 2px solid var(--ink-black);
+            box-shadow: 2px 2px 0 var(--ink-black);
+        }
+
+        .query-item {
+            margin-bottom: 2rem;
+        }
+
+        .query-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .query-item h3 {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+            border: 2px solid var(--ink-black);
+            background: var(--beige-main);
+            box-shadow: 6px 6px 0 var(--ink-black);
+        }
+
+        th,
+        td {
+            padding: 1.2rem;
+            border: 1px solid var(--ink-black);
+            text-align: left;
+        }
+
+        th {
+            background: var(--ink-black);
+            color: var(--beige-light);
+            font-size: 1.3rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        td {
+            font-weight: 500;
+        }
+
+        details {
+            background: var(--beige-main);
+            border: 2px solid var(--ink-black);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 3rem;
+            box-shadow: 6px 6px 0 var(--ink-black);
+            cursor: pointer;
+        }
+
+        summary {
+            font-weight: bold;
+            font-size: 1.6rem;
+            outline: none;
+        }
+
+        summary:hover {
+            color: var(--accent-blue);
+        }
+
+        /* Rubric Styles */
+        .rubric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .rubric-card {
+            background: var(--beige-main);
+            border: 2px solid var(--ink-black);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 6px 6px 0 var(--ink-black);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .rubric-card:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 8px 8px 0 var(--ink-black);
+        }
+
+        .rubric-header {
+            background: #E8E4D2;
+            color: var(--ink-black);
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--ink-black);
+        }
+
+        .rubric-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .rubric-total {
+            font-size: 1.4rem;
+            color: var(--ink-black);
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            padding: 0.2rem 0.8rem;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        .rubric-body {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .rubric-criterion {
+            background: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            position: relative;
+        }
+
+        .rubric-criterion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .rubric-mark {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--ink-black);
+            background: var(--beige-light);
+            border: 1px solid var(--ink-black);
+            box-shadow: 2px 2px 0 var(--ink-black);
+            padding: 0.1rem 0.6rem;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        .rubric-desc {
+            font-size: var(--content-size);
+            margin: 0;
+            color: #333;
+            line-height: var(--content-line-height);
+        }
+
+        .rubric-req-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: #666;
+            margin-bottom: 0.3rem;
+            display: block;
+        }
+
+        @media (max-width: 1000px) {
+            h1 {
+                font-size: 3.5rem;
+            }
+
+            .lead,
+            p.lead {
+            font-size: 1.2rem;
+            line-height: 1.65;
+            margin-bottom: 2.5rem;
+            max-width: 480px;
+            color: #444;
+        }
+
+            .main-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+                padding: 1.5rem;
+                height: auto;
+            }
+
+            .content-col {
+                padding: 0;
+                margin-bottom: 3rem;
+                text-align: center;
+            }
+
+            .hero-wrapper {
+                align-items: flex-start;
+                padding-top: 4rem;
+                min-height: auto;
+            }
+
+            .cta-group {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .specs-grid {
+                margin: 3rem auto 0;
+            }
+
+            .scene {
+                transform: scale(0.7) rotateY(-15deg) rotateX(5deg);
+                transform-origin: center top;
+            }
+
+            .tasks-container {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2.3rem;
+                line-height: 0.92;
+                margin-bottom: 1.25rem;
+            }
+
+            .lead {
+                font-size: 1.08rem;
+                line-height: 1.55;
+                margin-bottom: 1.5rem;
+                max-width: 480px;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                color: #444;
+            }
+
+            .hero-wrapper {
+                padding-top: 2rem;
+                padding-bottom: 1rem;
+            }
+
+            .main-container {
+                padding: 1rem;
+                gap: 1.5rem;
+            }
+
+            .content-col {
+                margin-bottom: 1rem;
+            }
+
+            .product-col {
+                min-height: 360px;
+            }
+
+            .specs-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                margin-top: 2rem;
+            }
+
+            .scene {
+                transform: scale(0.5) rotateY(-12deg) rotateX(5deg);
+                transform-origin: center top;
+            }
+
+            .cta-group {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.9rem;
+            }
+
+            .btn,
+            .price-tag {
+                text-align: center;
+            }
+
+            .task-card {
+                padding: 1.5rem;
+            }
+
+            .tasks-container {
+                padding: 1rem;
+            }
+
+            .tasks-container,
+            .tasks-container p,
+            .tasks-container li,
+            .tasks-container td,
+            .tasks-container blockquote,
+            .rubric-desc,
+            .bento-card p,
+            .bento-list li,
+            .code-panel-list li {
+                font-size: 1rem !important;
+                line-height: 1.55 !important;
+            }
+
+            .tasks-container h2 {
+                font-size: 2.2rem;
+                margin: 2.25rem 0 1rem;
+            }
+
+            .tasks-container h3,
+            .bento-card h3,
+            .rubric-title,
+            summary {
+                font-size: 1.45rem;
+            }
+
+            .bento-card {
+                padding: 1.35rem;
+            }
+
+            .bento-number {
+                font-size: 5.5rem;
+                bottom: -0.5rem;
+            }
+
+            .code-callout,
+            .code-panel {
+                padding: 0.85rem 0.95rem;
+            }
+
+            .rubric-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .rubric-criterion-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .badge-mark {
+                margin-left: 0;
+                margin-top: 0.5rem;
+                display: block;
+            }
+
+            .rubric-body {
+                padding: 1rem;
+            }
+
+            .two-col-list {
+                gap: 0;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="hero-wrapper">
+        <div class="main-container">
+            <!-- Left Content Column -->
+            <div class="content-col">
+                <div
+                    style="font-family: 'RetroMono', var(--font-mono); color: var(--accent-orange); font-size: 2.5rem; font-weight: bold; margin-bottom: 0.5rem; letter-spacing: 1px;">
+                    UQ INFS4205/7205 - A3:</div>
+                <h1>
+                    <span>Personalised</span>
+                    <span class="italic">Multimodal Agent System.</span>
+                </h1>
+                <p class="lead">
+                    Build an intelligent agent backed by your own multimodal knowledge base. Utilise LangGraph and
+                    Large Language Models (LLMs) to produce reliable, grounded, and domain-specific answers.
+                </p>
+
+                <div class="cta-group">
+                    <a href="#details" class="btn">View Requirements</a>
+                    <div class="price-tag" style="color: var(--accent-orange)">20 Marks</div>
+                </div>
+
+                <div class="specs-grid">
+                    <div class="spec-item">
+                        <h4>Framework</h4>
+                        <p>LangGraph Agent</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Knowledge Base</h4>
+                        <p>Text + Media</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Retrieval</h4>
+                        <p>Vector DB + Metadata</p>
+                    </div>
+                    <div class="spec-item">
+                        <h4>Inference</h4>
+                        <p>LLM (Ollama / API)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Product Column (3D Computer) -->
+            <div class="product-col">
+                <div class="scene" id="scene">
+                    <div class="computer-unit">
+                        <!-- Unit Faces -->
+                        <div class="face front">
+                            <div class="screen-inset">
+                                <div class="crt">
+                                    <div class="crt-glow">
+                                        <div class="crt-ui">
+                                            <div class="sidebar">
+                                                <div class="icon-list">
+                                                    <div><span class="icon-circle blue"></span> System</div>
+                                                    <div><span class="icon-circle orange"></span> Memory</div>
+                                                    <div><span class="icon-circle"></span> Index</div>
+                                                    <div><span class="icon-circle"></span> Generate</div>
+                                                    <!-- Deliberate retro typo styling -->
+                                                    <div><span class="icon-circle"></span> Think</div>
+                                                </div>
+                                            </div>
+                                            <div class="main-area">
+                                                <div style="font-size: 10px; margin-bottom: 4px; opacity: 0.7;">
+                                                    LangGraph v0.1</div>
+                                                <div class="window">
+                                                    <div class="window-header">
+                                                        <span>Agent_Trace.log</span>
+                                                        <span>[x]</span>
+                                                    </div>
+                                                    <div class="typing-container">
+                                                        <span id="typewriter"></span><span class="cursor"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="logo-badge"></div>
+                            <div class="floppy-slot"></div>
+
+                            <!-- Stickers -->
+                            <div class="sticker sticker-ball"></div>
+                            <div class="sticker sticker-star"></div>
+                            <div class="sticker sticker-text">MACHINE<br>INTELLIGENCE</div>
+
+                            <div class="grill">
+                                <div class="vent"></div>
+                                <div class="vent"></div>
+                                <div class="vent"></div>
+                                <div class="vent"></div>
+                                <div class="vent"></div>
+                                <div class="vent"></div>
+                                <div class="vent"></div>
+                                <div class="vent"></div>
+                            </div>
+                        </div>
+                        <div class="face back"></div>
+                        <div class="face left"></div>
+                        <div class="face right"></div>
+                        <div class="face top"></div>
+                        <div class="face bottom"></div>
+
+                        <!-- Keyboard -->
+                        <div class="keyboard-assembly">
+                            <div class="kb-base">
+                                <div class="keys-grid">
+                                    <div class="key"></div>
+                                    <div class="key"></div>
+                                    <div class="key"></div>
+                                    <div class="key"></div>
+                                    <div class="key"></div>
+                                    <div class="key"></div>
+                                    <div class="key"></div>
+                                    <div class="key"></div>
+                                    <div class="key"></div>
+                                    <div class="key"></div>
+                                    <div class="key"></div>
+                                    <div class="key"></div>
+
+                                    <div class="key wide"></div>
+                                    <div class="key"></div>
+                                    <div class="key"></div>
+                                    <div class="key"></div>
+                                    <div class="key"></div>
+                                    <div class="key"></div>
+                                    <div class="key"></div>
+                                    <div class="key"></div>
+                                    <div class="key"></div>
+                                    <div class="key wide"></div>
+
+                                    <div class="key"></div>
+                                    <div class="key"></div>
+                                    <div class="key space"></div>
+                                    <div class="key"></div>
+                                    <div class="key"></div>
+                                    <div class="key"></div>
+                                </div>
+                            </div>
+                            <div class="kb-front"></div>
+                            <div class="kb-back"></div>
+                            <div class="kb-left"></div>
+                            <div class="kb-right"></div>
+                            <div class="kb-shadow"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Details Section -->
+    <div id="details" class="tasks-container">
+        <h2>Overview</h2>
+        <div class="bento-card" style="margin-bottom: 2.5rem; padding: 2rem;">
+            <p style="margin-bottom: 1rem; font-size: 1.1rem; color: #333; line-height: 1.6;">
+                In this assignment, you will design, implement, and evaluate a <strong style="color: var(--accent-orange);">Personalised Multimodal Agent System</strong> built on your own
+                knowledge base.
+            </p>
+            <p style="margin-bottom: 1rem; font-size: 1.1rem; color: #333; line-height: 1.6;">
+                The goal is not simply to create a chatbot that runs, but to investigate how system design choices
+                affect retrieval quality, reasoning ability, and user interaction.
+            </p>
+            <p style="margin-bottom: 0.5rem; font-size: 1.1rem; color: #333; font-weight: bold;">The system must
+                integrate:</p>
+            <ul class="bento-list" style="margin-bottom: 1.5rem;">
+                <li>a personalised knowledge base</li>
+                <li>at least two modalities</li>
+                <li>a retrieval/indexing pipeline</li>
+                <li>an agent framework for tool orchestration</li>
+                <li>a quantitative evaluation of system design choices</li>
+            </ul>
+            <p style="margin-bottom: 0; font-size: 1.1rem; color: #333; line-height: 1.6;">
+                This assignment emphasises original system thinking. High marks will be awarded for clear design
+                hypotheses, meaningful technical decisions, strong comparisons between alternative system variants, and
+                evidence-based analysis.
+            </p>
+        </div>
+
+        <h2>Learning Objectives</h2>
+        <div class="bento-card" style="margin-bottom: 2.5rem; padding: 2rem;">
+            <ul class="bento-list" style="margin-bottom: 0;">
+                <li>Construct a personalised multimodal knowledge base.</li>
+                <li>Design and justify retrieval and indexing strategies.</li>
+                <li>Build an agent workflow that uses tools and state.</li>
+                <li>Compare alternative system designs through evaluation.</li>
+                <li>Analyse trade-offs between retrieval quality and efficiency.</li>
+                <li>Communicate system design and findings clearly.</li>
+            </ul>
+        </div>
+
+        <h2>Task Description</h2>
+        <div class="bento-card" style="margin-bottom: 4rem; padding: 2rem;">
+            <p style="margin-bottom: 1rem; font-size: 1.1rem; color: #333; line-height: 1.6;">
+                You will build a personalised multimodal agent system that answers questions over a knowledge base
+                derived from your own curated data.
+            </p>
+            <p style="margin-bottom: 1.5rem; font-size: 1.1rem; color: #333; line-height: 1.6;">
+                Your system must go beyond a basic chatbot. It should be framed around a clear technical question,
+                design hypothesis, or innovation point.
+            </p>
+            <p style="margin-bottom: 0.5rem; font-size: 1.1rem; color: #333; font-weight: bold;">Examples include:</p>
+            <ul class="bento-list" style="margin-bottom: 1.5rem;">
+                <li>Is text-only indexing sufficient for multimodal QA?</li>
+                <li>Can image-only embeddings support retrieval?</li>
+                <li>Does hybrid multimodal retrieval outperform single-space retrieval?</li>
+                <li>Does agentic routing improve complex queries?</li>
+                <li>Does memory help multi-turn personalised interactions?</li>
+                <li>What is gained by separating retrieval, planning, and answering?</li>
+            </ul>
+            <div class="code-callout">
+                <code>Treat the assignment as a mini systems research project.</code>
+            </div>
+        </div>
+
+        <style>
+            /* Bento Grid Styles */
+            .bento-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1.5rem;
+                margin-bottom: 4rem;
+            }
+
+            .bento-card {
+                background: var(--beige-main);
+                border: 2px solid var(--ink-black);
+                border-radius: 12px;
+                padding: 2rem;
+                box-shadow: 4px 4px 0 var(--ink-black);
+                display: flex;
+                flex-direction: column;
+                position: relative;
+                overflow: hidden;
+                transition: transform 0.2s ease, box-shadow 0.2s ease;
+            }
+
+            .bento-card:hover {
+                transform: translate(-2px, -2px);
+                box-shadow: 6px 6px 0 var(--ink-black);
+            }
+
+            .bento-card.span-2 {
+                grid-column: span 2;
+            }
+
+            .bento-card.span-1 {
+                grid-column: span 1;
+            }
+
+            .bento-number {
+                position: absolute;
+                bottom: -1rem;
+                right: 0rem;
+                font-size: 8rem;
+                font-family: 'RetroSerif', var(--font-serif);
+                color: rgba(0, 0, 0, 0.035);
+                font-weight: bold;
+                line-height: 1;
+                pointer-events: none;
+                z-index: 0;
+                user-select: none;
+            }
+
+            .bento-content {
+                position: relative;
+                z-index: 1;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .bento-card h3 {
+                font-family: 'RetroSerif', var(--font-serif);
+                font-size: 1.6rem;
+                margin-bottom: 0.5rem;
+                color: var(--ink-black);
+                line-height: 1.2;
+            }
+
+            .bento-card p {
+                color: #444;
+                margin-bottom: 1rem;
+                font-size: 1.1rem;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                line-height: 1.6;
+            }
+
+            .code-callout {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.7rem;
+                margin-top: 0.4rem;
+                padding: 0.8rem 1rem;
+                border: 2px solid var(--ink-black);
+                border-radius: 10px;
+                background: linear-gradient(135deg, #ece4cf 0%, #e4dbc4 100%);
+                color: #3d372f;
+                font-size: 1.05rem;
+                line-height: 1.5;
+                font-weight: 600;
+                box-shadow: 4px 4px 0 rgba(15, 15, 15, 0.18);
+                letter-spacing: 0.01em;
+            }
+
+            .code-callout::before {
+                content: ">";
+                color: var(--accent-orange);
+                font-weight: 700;
+            }
+
+            .code-callout code {
+                background: transparent;
+                color: inherit;
+                font-size: inherit;
+            }
+
+            .code-panel {
+                background: linear-gradient(180deg, #ece4cf 0%, #e3dac4 100%);
+                border: 2px solid var(--ink-black);
+                border-radius: 10px;
+                padding: 1rem 1.1rem;
+                color: #38332d;
+                box-shadow: 4px 4px 0 rgba(15, 15, 15, 0.18);
+            }
+
+            .code-panel-title {
+                display: inline-block;
+                margin-bottom: 0.85rem;
+                padding: 0.28rem 0.65rem;
+                border-radius: 999px;
+                background: rgba(192, 86, 33, 0.1);
+                border: 1px solid rgba(192, 86, 33, 0.35);
+                color: var(--accent-orange);
+                font-size: 0.88rem;
+                font-weight: 700;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
+            }
+
+            .code-panel-list {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            .code-panel-list li {
+                position: relative;
+                margin: 0;
+                padding: 0.3rem 0 0.3rem 1.4rem;
+                color: #38332d;
+                font-size: 1rem;
+                line-height: 1.55;
+                border-bottom: 1px solid rgba(15, 15, 15, 0.08);
+            }
+
+            .code-panel-list li:last-child {
+                border-bottom: none;
+            }
+
+            .code-panel-list li::before {
+                content: ">";
+                position: absolute;
+                left: 0;
+                top: 0.3rem;
+                color: var(--accent-orange);
+                font-weight: 700;
+            }
+
+            .bento-list {
+                margin-top: 1rem;
+                list-style-type: none;
+                padding: 0;
+            }
+
+            .bento-list li {
+                position: relative;
+                padding-left: 1.2rem;
+                margin-bottom: 0.8rem;
+                color: #333;
+                font-size: 1.1rem;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                line-height: 1.6;
+            }
+
+            .bento-list li::before {
+                content: "▸";
+                position: absolute;
+                left: 0;
+                color: var(--accent-orange);
+                font-size: 1.2rem;
+                line-height: 1.6;
+                top: 0px;
+            }
+
+            .two-col-list {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 0 1rem;
+            }
+
+            @media (max-width: 900px) {
+                .bento-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .bento-card.span-2,
+                .bento-card.span-1 {
+                    grid-column: span 1;
+                }
+
+                .two-col-list {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+
+        <h2>Minimum Technical Requirements</h2>
+        <div class="bento-grid">
+
+            <!-- Card 1 -->
+            <div class="bento-card span-2">
+                <div class="bento-number">01</div>
+                <div class="bento-content">
+                    <h3>Personalised Knowledge Base</h3>
+                    <p>Construct a knowledge base using curated, genuinely personalised content.</p>
+
+                    <!-- <div style="margin-top: 0.5rem; margin-bottom: 1rem;">
+                        <span class="badge-mark"
+                            style="margin-left:0; font-size: 0.95rem; padding: 0.2rem 0.6rem; box-shadow: 2px 2px 0 var(--ink-black);">Examples</span>
+                    </div> -->
+
+                    <ul class="bento-list two-col-list">
+                        <li>Personal study materials</li>
+                        <li>Course notes</li>
+                        <li>Research papers & figures</li>
+                        <li>Travel memories</li>
+                        <li>Recipe collections</li>
+                        <li>Shopping records</li>
+                        <li>Project documents</li>
+                        <li>Hobby collections</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="bento-card span-1">
+                <div class="bento-number">02</div>
+                <div class="bento-content">
+                    <h3>At Least Two Modalities</h3>
+                    <p>Integrate multiple types of data into the pipeline.</p>
+
+                    <ul class="bento-list" style="margin-top: auto;">
+                        <li>Text + Image</li>
+                        <li>Text + Audio transcript</li>
+                        <li>Text + Chart</li>
+                        <li>Image + Metadata</li>
+                        <li>Doc text + Figures</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="bento-card span-1">
+                <div class="bento-number">03</div>
+                <div class="bento-content">
+                    <h3>Retrieval Component</h3>
+                    <p>A structured approach to fetch relevant context.</p>
+                    <ul class="bento-list">
+                        <li>Vector databases</li>
+                        <li>Multimodal embeddings</li>
+                        <li>Separate indices</li>
+                        <li>OCR / caption indexing</li>
+                        <li>Hybrid retrieval</li>
+                        <li>Ranking or fusion</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="bento-card span-1">
+                <div class="bento-number">04</div>
+                <div class="bento-content">
+                    <h3>Agent Framework</h3>
+                    <p>Orchestrate steps logically and effectively.</p>
+                    <ul class="bento-list">
+                        <li>Query routing</li>
+                        <li>Retrieval planning</li>
+                        <li>Memory & state</li>
+                        <li>Tool selection</li>
+                        <li>Task decomposition</li>
+                        <li>Verification stages</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Card 5 -->
+            <div class="bento-card span-1">
+                <div class="bento-number">05</div>
+                <div class="bento-content">
+                    <h3>Quantitative Evaluation</h3>
+                    <p>Rigorous comparisons using defined metrics.</p>
+                    <ul class="bento-list">
+                        <li>Plain LLM baselines</li>
+                        <li>Agent-based tracking</li>
+                        <li>Retrieval ablations</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+        <style>
+            /* Eval Grid */
+            .eval-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 1.5rem;
+                margin-bottom: 4rem;
+            }
+
+            .eval-card {
+                background: #fff;
+                border: 2px dashed var(--ink-black);
+                padding: 1.5rem;
+                position: relative;
+                box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.05);
+            }
+
+            .eval-card h3 {
+                font-family: 'RetroMono', var(--font-mono);
+                text-transform: uppercase;
+                font-size: 1.2rem;
+                margin-bottom: 1rem;
+                background: var(--ink-black);
+                color: #fff;
+                display: inline-block;
+                padding: 0.3rem 0.6rem;
+                border-radius: 4px;
+            }
+
+            .eval-list {
+                list-style: none;
+                padding: 0;
+            }
+
+            .eval-list li {
+    padding: 0.6rem 0;
+    border-bottom: 1px dotted #ccc;
+    font-size: 1.1rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    color: #444;
+}
+
+            .eval-list li:last-child {
+                border-bottom: none;
+            }
+
+            .eval-list li::before {
+                content: "=> ";
+                color: var(--accent-blue);
+                font-family: 'RetroMono', var(--font-mono);
+                font-weight: bold;
+            }
+        </style>
+
+        <h2>Evaluation Requirements</h2>
+        <div class="bento-card" style="margin-bottom: 2rem; padding: 2rem;">
+            <p style="font-size: 1.1rem; color: #444; line-height: 1.6; margin-bottom: 0;">
+                Your evaluation must include a benchmark suite covering different query types. Rather than showing a few
+                ad hoc examples, you should design a small but structured test set.
+            </p>
+        </div>
+        <div class="bento-grid">
+            <div class="bento-card span-1">
+                <h3>Required Query Families</h3>
+                <p style="font-size: 0.95rem; margin-bottom: 1rem; font-weight: bold;">You must evaluate at least four
+                    query families:</p>
+                <ul class="bento-list" style="margin-top: 0; margin-bottom: 1rem;">
+                    <li style="margin-bottom: 1rem; line-height: 1.4;">
+                        <strong>Factual Retrieval</strong><br>
+                        <span style="opacity: 0.85; font-size: 0.95rem; line-height: 1.2; display: inline-block; margin-top: 0.2rem;">direct
+                            retrieval of stored knowledge (<strong style="color: var(--accent-orange);">e.g., How long does the miso soup recipe take?</strong>)</span>
+                    </li>
+                    <li style="margin-bottom: 1rem; line-height: 1.4;">
+                        <strong>Cross-Modal Retrieval</strong><br>
+                        <span style="opacity: 0.85; font-size: 0.95rem; line-height: 1.2; display: inline-block; margin-top: 0.2rem;">queries
+                            requiring information from different modalities (<strong style="color: var(--accent-orange);">e.g., Find a recipe whose image shows a
+                            soup with tofu.</strong>)</span>
+                    </li>
+                    <li style="margin-bottom: 1rem; line-height: 1.4;">
+                        <strong>Analytical / Multi-Hop Synthesis</strong><br>
+                        <span style="opacity: 0.85; font-size: 0.95rem; line-height: 1.2; display: inline-block; margin-top: 0.2rem;">questions
+                            that require combining multiple pieces of evidence (<strong style="color: var(--accent-orange);">e.g., have eggs, tomatoes, and onions.
+                            What can I cook, and which option is the fastest?</strong>)</span>
+                    </li>
+                    <li style="margin-bottom: 0; line-height: 1.4;">
+                        <strong>Conversational Follow-Up / Personalised Context</strong><br>
+                        <span style="opacity: 0.85; font-size: 0.95rem; line-height: 1.2; display: inline-block; margin-top: 0.2rem;">multi-turn
+                            or memory-sensitive queries (<strong style="color: var(--accent-orange);">e.g., I’m allergic to peanuts and I want something quick
+                            tonight.</strong>)</span>
+                    </li>
+                </ul>
+                <div style="margin-top: auto; padding-top: 1rem; border-top: 1px dashed var(--ink-black); font-size: 0.9rem; color: #444; font-weight: bold;">
+                    For each family, you should provide at least one test case and analyse where each system variant
+                    succeeds or fails.
+                </div>
+            </div>
+            <div class="bento-card span-1">
+                <h3>Required Metrics</h3>
+                <p style="font-size: 0.95rem; margin-bottom: 1rem; font-weight: bold;">Your evaluation must include at
+                    least:</p>
+                <ul class="bento-list" style="margin-top: 0;">
+                    <li style="margin-bottom: 1.5rem; line-height: 1.4;">
+                        <strong>One quality metric</strong>
+                        <ul style="margin: 0.7rem 0 0 1.2rem; padding-left: 0; list-style: none;">
+                            <li style="margin-bottom: 0.75rem; line-height: 1.35; position: relative; padding-left: 1.1rem;"><strong>retrieval-oriented metric</strong>
+                                <span style="opacity: 0.85; font-size: 0.95rem; line-height: 1.2; display: inline-block; margin-top: 0.2rem;">such
+                                    as Recall@k, Top-k retrieval accuracy, or MRR;</span>
+                            </li>
+                            <li style="margin-bottom: 0; line-height: 1.35; position: relative; padding-left: 1.1rem;">
+                                <strong>answer-quality measure</strong><br>
+                                <span style="opacity: 0.85; font-size: 0.95rem; line-height: 1.2; display: inline-block; margin-top: 0.2rem;">such
+                                    as task success rate, keyword match, groundedness, human judgement, or LLM-as-judge
+                                    scoring;</span>
+                            </li>
+                        </ul>
+                    </li>
+                    <li style="margin-bottom: 0; line-height: 1.4;">
+                        <strong>And one efficiency or systems metric</strong><br>
+                        <span style="opacity: 0.85; font-size: 0.95rem; line-height: 1.2; display: inline-block; margin-top: 0.2rem;">such
+                            as latency, number of tool calls, or token usage.</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="bento-card span-1">
+                <h3>Required Comparisons</h3>
+                <p style="font-size: 0.95rem; margin-bottom: 1rem; font-weight: bold;">You must compare:</p>
+                <ul class="bento-list" style="margin-top: 0; margin-bottom: 1.5rem;">
+                    <li><strong>plain LLM/VLM</strong> vs final agent system;</li>
+                    <li><strong>at least one ablation</strong> on your final design (e.g., with and without indexing).
+                    </li>
+                </ul>
+
+                <div class="code-panel">
+                    <div class="code-panel-title">Example ablations</div>
+                    <ul class="code-panel-list">
+                        <li><code>text-only index</code> vs <code>image-only index</code></li>
+                        <li><code>caption-only</code> vs <code>caption+image embeddings</code></li>
+                        <li><code>no memory</code> vs <code>memory</code></li>
+                        <li><code>no router</code> vs <code>router</code></li>
+                        <li><code>fixed pipeline</code> vs <code>tool-based agent</code></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="bento-card"
+            style="margin-bottom: 4rem; padding: 2.5rem; border-color: var(--accent-orange); background: #FAF7F0;">
+            <h3
+                style="font-family: 'RetroSerif', var(--font-serif); font-size: 2rem; margin-bottom: 1rem; color: var(--ink-black); line-height: 1.2;">
+                Originality & Use of Teaching Demo</h3>
+            <p style="font-size: 1.1rem; line-height: 1.6; margin-bottom: 1.5rem; color: #444;">The teaching demo
+                illustrates LangGraph usage but is <strong>not a project template</strong>. Your submission must include
+                original:</p>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 2rem;">
+                <span
+                    style="background: rgba(0,0,0,0.05); padding: 0.4rem 0.8rem; border-radius: 4px; font-family: 'RetroMono', monospace; border: 1px solid var(--ink-black); color: var(--ink-black);">problem
+                    framing</span>
+                <span
+                    style="background: rgba(0,0,0,0.05); padding: 0.4rem 0.8rem; border-radius: 4px; font-family: 'RetroMono', monospace; border: 1px solid var(--ink-black); color: var(--ink-black);">knowledge
+                    base design</span>
+                <span
+                    style="background: rgba(0,0,0,0.05); padding: 0.4rem 0.8rem; border-radius: 4px; font-family: 'RetroMono', monospace; border: 1px solid var(--ink-black); color: var(--ink-black);">multimodal
+                    representation</span>
+                <span
+                    style="background: rgba(0,0,0,0.05); padding: 0.4rem 0.8rem; border-radius: 4px; font-family: 'RetroMono', monospace; border: 1px solid var(--ink-black); color: var(--ink-black);">retrieval
+                    strategy</span>
+                <span
+                    style="background: rgba(0,0,0,0.05); padding: 0.4rem 0.8rem; border-radius: 4px; font-family: 'RetroMono', monospace; border: 1px solid var(--ink-black); color: var(--ink-black);">agent
+                    workflow</span>
+                <span
+                    style="background: rgba(0,0,0,0.05); padding: 0.4rem 0.8rem; border-radius: 4px; font-family: 'RetroMono', monospace; border: 1px solid var(--ink-black); color: var(--ink-black);">evaluation
+                    methodology</span>
+            </div>
+            <div
+                style="background: #FFF3E0; color: var(--accent-orange); border: 2px dashed var(--accent-orange); padding: 1.5rem; border-radius: 6px; font-weight: bold; font-family: 'RetroMono', monospace; font-size: 1.2rem; display: flex; align-items: flex-start; gap: 1rem;">
+                <span style="font-size: 1.8rem; line-height: 1;">⚠️</span>
+                <div>
+                    NO CREDIT RULE<br>
+                    <span style="font-weight: normal; font-size: 1.1rem; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: var(--ink-black); display: block; margin-top: 0.5rem; line-height: 1.5;">Projects
+                        that simply copy the teaching demo may receive zero marks.</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 0.5rem; justify-content: flex-start; padding-bottom: 0.5rem; border-bottom: 2px solid var(--ink-black);">
+            <h2
+                style="font-family: 'RetroSerif', serif; font-size: 2.5rem; color: var(--ink-black); margin: 0; padding: 0; border: none;">
+                Deliverables</h2>
+        </div>
+
+        <div style="margin-top: 1.5rem; margin-bottom: 2.5rem; font-size: 1.1rem; color: #444; line-height: 1.6;">
+            <p style="margin-bottom: 0.8rem;">You must submit the following:</p>
+            <ul class="bento-list" style="margin-bottom: 1rem;">
+                <li style="margin-bottom: 0.8rem;">Source code as a zip and report as pdf, submitted separately, naming
+                    is <strong style="color: var(--ink-black); background: rgba(0,0,0,0.05); padding: 0.2rem 0.5rem; border-radius: 4px;">[StudentID_Name.xxx]</strong>
+                    (e.g., Sxxxxxxx_NAME.zip).
+                </li>
+                <li style="margin-bottom: 0;">Report Maximum 4 pages (allow appendix). Your report should be written
+                    like a short systems paper and include the sections below.</li>
+            </ul>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 4rem;">
+            <!-- Source Code Folder -->
+            <div style="display: flex; flex-direction: column;">
+                <!-- Tab Container -->
+                <div style="display: flex; z-index: 2; position: relative; margin-bottom: -2px;">
+                    <div
+                        style="background: #e2dfcf; border: 2px solid var(--ink-black); border-bottom: none; border-radius: 6px 6px 0 0; padding: 0.6rem 1.2rem; font-family: 'RetroMono', monospace; font-size: 0.95rem; color: #444; position: relative;">
+                        source_code.zip</div>
+                </div>
+                <!-- Body -->
+                <div style="background: #e2dfcf; border: 2px solid var(--ink-black); border-radius: 0 8px 8px 8px; padding: 2.5rem 2rem; position: relative; z-index: 1; flex-grow: 1;">
+                    <h3
+                        style="font-family: 'RetroSerif', serif; font-size: 1.6rem; color: var(--ink-black); margin-top: 0; margin-bottom: 1.5rem; font-weight: normal;">
+                        Source Code Repository</h3>
+                    <ul style="list-style: none; padding-left: 0; color: #333; line-height: 2; font-size: 1.1rem; margin: 0;">
+                        <li><span style="display: inline-block; width: 1.8em; text-align: center;">📁</span> source code
+                        </li>
+                        <li><span style="display: inline-block; width: 1.8em; text-align: center;">📄</span>
+                            installation instructions</li>
+                        <li><span style="display: inline-block; width: 1.8em; text-align: center;">⚙️</span>
+                            dependencies</li>
+                        <li><span style="display: inline-block; width: 1.8em; text-align: center;">▶️</span> run
+                            instructions</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Report Folder -->
+            <div style="display: flex; flex-direction: column;">
+                <div style="display: flex; z-index: 2; position: relative; margin-bottom: -2px;">
+                    <div
+                        style="background: #e2dfcf; border: 2px solid var(--ink-black); border-bottom: none; border-radius: 6px 6px 0 0; padding: 0.6rem 1.2rem; font-family: 'RetroMono', monospace; font-size: 0.95rem; color: #444; position: relative;">
+                        report.pdf</div>
+                </div>
+                <div style="background: #e2dfcf; border: 2px solid var(--ink-black); border-radius: 0 8px 8px 8px; padding: 2.5rem 2rem; position: relative; z-index: 1; flex-grow: 1;">
+                    <h3
+                        style="font-family: 'RetroSerif', serif; font-size: 1.6rem; color: var(--ink-black); margin-top: 0; margin-bottom: 1.5rem; font-weight: normal;">
+                        Report (Maximum 4 pages)</h3>
+                    <ul style="list-style: none; padding-left: 0; color: #333; line-height: 2; font-size: 1.1rem; margin: 0;">
+                        <li><span style="display: inline-block; width: 1.8em; text-align: center;">📝</span> problem
+                            statement</li>
+                        <li><span style="display: inline-block; width: 1.8em; text-align: center;">📚</span> knowledge
+                            base description</li>
+                        <li><span style="display: inline-block; width: 1.8em; text-align: center;">🔎</span> retrieval
+                            design</li>
+                        <li><span style="display: inline-block; width: 1.8em; text-align: center;">🤖</span> agent
+                            workflow</li>
+                        <li><span style="display: inline-block; width: 1.8em; text-align: center;">🔬</span> experiments
+                            & ablation studies</li>
+                        <li><span style="display: inline-block; width: 1.8em; text-align: center;">📊</span> results &
+                            failure analysis</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
+        <style>
+            details.rubric-card>summary {
+                list-style: none;
+                /* Hide default triangle */
+                outline: none;
+            }
+
+            details.rubric-card>summary::-webkit-details-marker {
+                display: none;
+            }
+
+            details.rubric-card[open] .rubric-header {
+                border-bottom: 2px solid var(--ink-black);
+            }
+
+            details.rubric-card:not([open]) .rubric-header {
+                border-bottom: none;
+            }
+
+            details.rubric-card .rubric-header {
+                transition: background 0.2s ease;
+            }
+
+            details.rubric-card .rubric-header:hover {
+                background: #DFDBC4;
+            }
+        </style>
+
+        <h2>Marking Criteria (20 Marks)</h2>
+        <p style="font-size: 1.4rem; margin-bottom: 2.5rem; color: #333; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+            Click on each category below to expand the detailed rubric describing expectations based on mark
+            distributions.
+        </p>
+
+        <div class="rubric-grid"
+            style="display: flex; flex-direction: column; gap: 1.5rem; margin-top: 0; margin-bottom: 4rem;">
+
+            <!-- Criterion 1 -->
+            <details class="rubric-card" style="margin: 0; display: block; overflow: visible;">
+                <summary style="padding: 0; cursor: pointer;">
+                    <div class="rubric-header">
+                        <h4 class="rubric-title">1. Problem Framing & Innovation</h4>
+                        <div class="rubric-total">4 Marks</div>
+                    </div>
+                </summary>
+                <div class="rubric-body">
+                    <p style="font-size: 1.25rem; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin-bottom: 1.5rem;">
+                        Assesses the originality and clarity of the design question. Higher marks present a clear
+                        technical question with a strong, meaningful innovation point.</p>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <div class="rubric-criterion">
+                            <div class="rubric-criterion-header" style="margin-bottom: 0.8rem;">
+                                <span class="rubric-mark"
+                                    style="background: var(--ink-black); color: var(--beige-light); font-family: 'RetroMono', monospace; font-size: 1.1rem; padding: 0.3rem 0.6rem; border-radius: 4px;">4.0
+                                    – 3.5 Marks</span>
+                            </div>
+                            <p class="rubric-desc">A clear and compelling design hypothesis is articulated. The project
+                                demonstrates substantial originality and a strong independent technical contribution.
+                                The innovation is meaningful, well-motivated, and clearly distinct from the teaching
+                                demo.</p>
+                        </div>
+                        <div class="rubric-criterion">
+                            <div class="rubric-criterion-header" style="margin-bottom: 0.8rem;">
+                                <span class="rubric-mark"
+                                    style="background: var(--ink-black); color: var(--beige-light); font-family: 'RetroMono', monospace; font-size: 1.1rem; padding: 0.3rem 0.6rem; border-radius: 4px;">3.4
+                                    – 2.5 Marks</span>
+                            </div>
+                            <p class="rubric-desc">A reasonable design question is presented, with some original
+                                thinking. The system extends beyond the demo in meaningful ways, though the innovation
+                                may be narrower or less fully justified.</p>
+                        </div>
+                        <div class="rubric-criterion">
+                            <div class="rubric-criterion-header" style="margin-bottom: 0.8rem;">
+                                <span class="rubric-mark"
+                                    style="background: var(--ink-black); color: var(--beige-light); font-family: 'RetroMono', monospace; font-size: 1.1rem; padding: 0.3rem 0.6rem; border-radius: 4px;">2.4
+                                    – 1.5 Marks</span>
+                            </div>
+                            <p class="rubric-desc">The project has limited originality. The framing is weak, vague, or
+                                mostly implementation-driven. Some independent effort is visible, but the technical
+                                contribution is modest.</p>
+                        </div>
+                        <div class="rubric-criterion">
+                            <div class="rubric-criterion-header" style="margin-bottom: 0.8rem;">
+                                <span class="rubric-mark"
+                                    style="background: var(--ink-black); color: var(--beige-light); font-family: 'RetroMono', monospace; font-size: 1.1rem; padding: 0.3rem 0.6rem; border-radius: 4px;">1.4
+                                    – 0.0 Marks</span>
+                            </div>
+                            <p class="rubric-desc">The work is largely derivative. The framing is minimal or unclear.
+                                The system appears close to the demo or relies on superficial modifications only.</p>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+            <!-- Criterion 2 -->
+            <details class="rubric-card" style="margin: 0; display: block; overflow: visible;">
+                <summary style="padding: 0; cursor: pointer;">
+                    <div class="rubric-header">
+                        <h4 class="rubric-title">2. Knowledge Base & Retrieval Design</h4>
+                        <div class="rubric-total">4 Marks</div>
+                    </div>
+                </summary>
+                <div class="rubric-body">
+                    <p style="font-size: 1.25rem; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin-bottom: 1.5rem;">
+                        Assesses the quality of multimodal data design and retrieval/indexing decisions. Higher marks
+                        use a well-constructed personalised knowledge base with meaningful multimodal integration.</p>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <div class="rubric-criterion">
+                            <div class="rubric-criterion-header" style="margin-bottom: 0.8rem;">
+                                <span class="rubric-mark"
+                                    style="background: var(--ink-black); color: var(--beige-light); font-family: 'RetroMono', monospace; font-size: 1.1rem; padding: 0.3rem 0.6rem; border-radius: 4px;">4.0
+                                    – 3.5 Marks</span>
+                            </div>
+                            <p class="rubric-desc">The knowledge base is well curated, coherent, and genuinely
+                                personalised. At least two modalities are integrated meaningfully. Retrieval/indexing
+                                choices are well justified and compared through sound experiments.</p>
+                        </div>
+                        <div class="rubric-criterion">
+                            <div class="rubric-criterion-header" style="margin-bottom: 0.8rem;">
+                                <span class="rubric-mark"
+                                    style="background: var(--ink-black); color: var(--beige-light); font-family: 'RetroMono', monospace; font-size: 1.1rem; padding: 0.3rem 0.6rem; border-radius: 4px;">3.4
+                                    – 2.5 Marks</span>
+                            </div>
+                            <p class="rubric-desc">The knowledge base is appropriate and multimodal, with mostly
+                                sensible retrieval design. Some comparison or justification is provided, though the
+                                design space explored may be limited.</p>
+                        </div>
+                        <div class="rubric-criterion">
+                            <div class="rubric-criterion-header" style="margin-bottom: 0.8rem;">
+                                <span class="rubric-mark"
+                                    style="background: var(--ink-black); color: var(--beige-light); font-family: 'RetroMono', monospace; font-size: 1.1rem; padding: 0.3rem 0.6rem; border-radius: 4px;">2.4
+                                    – 1.5 Marks</span>
+                            </div>
+                            <p class="rubric-desc">The knowledge base is basic or weakly personalised. Multimodal use is
+                                present but shallow. Retrieval design is underdeveloped or insufficiently justified.</p>
+                        </div>
+                        <div class="rubric-criterion">
+                            <div class="rubric-criterion-header" style="margin-bottom: 0.8rem;">
+                                <span class="rubric-mark"
+                                    style="background: var(--ink-black); color: var(--beige-light); font-family: 'RetroMono', monospace; font-size: 1.1rem; padding: 0.3rem 0.6rem; border-radius: 4px;">1.4
+                                    – 0.0 Marks</span>
+                            </div>
+                            <p class="rubric-desc">The data setup is minimal, poorly explained, or not meaningfully
+                                multimodal. Retrieval design is simplistic or largely inherited from template code.</p>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+            <!-- Criterion 3 -->
+            <details class="rubric-card" style="margin: 0; display: block; overflow: visible;">
+                <summary style="padding: 0; cursor: pointer;">
+                    <div class="rubric-header">
+                        <h4 class="rubric-title">3. Agent Framework & Tool Orchestration</h4>
+                        <div class="rubric-total">4 Marks</div>
+                    </div>
+                </summary>
+                <div class="rubric-body">
+                    <p style="font-size: 1.25rem; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin-bottom: 1.5rem;">
+                        Assesses the design and implementation of the agent workflow. Higher marks feature a
+                        well-structured workflow correctly utilising tools, routing, or state.</p>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <div class="rubric-criterion">
+                            <div class="rubric-criterion-header" style="margin-bottom: 0.8rem;">
+                                <span class="rubric-mark"
+                                    style="background: var(--ink-black); color: var(--beige-light); font-family: 'RetroMono', monospace; font-size: 1.1rem; padding: 0.3rem 0.6rem; border-radius: 4px;">4.0
+                                    – 3.5 Marks</span>
+                            </div>
+                            <p class="rubric-desc">The agent workflow is well designed and clearly useful. Tool usage,
+                                routing, memory, or state handling are thoughtful and task-appropriate. The framework
+                                demonstrates clear added value over a simple pipeline.</p>
+                        </div>
+                        <div class="rubric-criterion">
+                            <div class="rubric-criterion-header" style="margin-bottom: 0.8rem;">
+                                <span class="rubric-mark"
+                                    style="background: var(--ink-black); color: var(--beige-light); font-family: 'RetroMono', monospace; font-size: 1.1rem; padding: 0.3rem 0.6rem; border-radius: 4px;">3.4
+                                    – 2.5 Marks</span>
+                            </div>
+                            <p class="rubric-desc">The workflow is functional and mostly appropriate. Some non-trivial
+                                orchestration is present, though the design may be less sophisticated or less well
+                                analysed.</p>
+                        </div>
+                        <div class="rubric-criterion">
+                            <div class="rubric-criterion-header" style="margin-bottom: 0.8rem;">
+                                <span class="rubric-mark"
+                                    style="background: var(--ink-black); color: var(--beige-light); font-family: 'RetroMono', monospace; font-size: 1.1rem; padding: 0.3rem 0.6rem; border-radius: 4px;">2.4
+                                    – 1.5 Marks</span>
+                            </div>
+                            <p class="rubric-desc">A basic framework is implemented, but orchestration is limited. The
+                                agent adds only modest value beyond a linear retrieval-answer pipeline.</p>
+                        </div>
+                        <div class="rubric-criterion">
+                            <div class="rubric-criterion-header" style="margin-bottom: 0.8rem;">
+                                <span class="rubric-mark"
+                                    style="background: var(--ink-black); color: var(--beige-light); font-family: 'RetroMono', monospace; font-size: 1.1rem; padding: 0.3rem 0.6rem; border-radius: 4px;">1.4
+                                    – 0.0 Marks</span>
+                            </div>
+                            <p class="rubric-desc">The workflow is superficial, generic, or minimally adapted. It
+                                resembles the teaching demo closely.</p>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+            <!-- Criterion 4 -->
+            <details class="rubric-card" style="margin: 0; display: block; overflow: visible;">
+                <summary style="padding: 0; cursor: pointer;">
+                    <div class="rubric-header">
+                        <h4 class="rubric-title">4. Quantitative Evaluation & Ablation</h4>
+                        <div class="rubric-total">4 Marks</div>
+                    </div>
+                </summary>
+                <div class="rubric-body">
+                    <p style="font-size: 1.25rem; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin-bottom: 1.5rem;">
+                        Assesses the rigour of evaluation. Higher marks rigorously evaluate variants against multiple
+                        baselines and include impactful discussions on trade-offs.</p>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <div class="rubric-criterion">
+                            <div class="rubric-criterion-header" style="margin-bottom: 0.8rem;">
+                                <span class="rubric-mark"
+                                    style="background: var(--ink-black); color: var(--beige-light); font-family: 'RetroMono', monospace; font-size: 1.1rem; padding: 0.3rem 0.6rem; border-radius: 4px;">4.0
+                                    – 3.5 Marks</span>
+                            </div>
+                            <p class="rubric-desc">Evaluation is rigorous and insightful. Multiple baselines and
+                                ablations are compared. Metrics are appropriate and clearly reported. The analysis
+                                explains why some designs perform better than others.</p>
+                        </div>
+                        <div class="rubric-criterion">
+                            <div class="rubric-criterion-header" style="margin-bottom: 0.8rem;">
+                                <span class="rubric-mark"
+                                    style="background: var(--ink-black); color: var(--beige-light); font-family: 'RetroMono', monospace; font-size: 1.1rem; padding: 0.3rem 0.6rem; border-radius: 4px;">3.4
+                                    – 2.5 Marks</span>
+                            </div>
+                            <p class="rubric-desc">Evaluation is solid and includes the required comparisons. Metrics
+                                are mostly appropriate. Some useful analysis is provided.</p>
+                        </div>
+                        <div class="rubric-criterion">
+                            <div class="rubric-criterion-header" style="margin-bottom: 0.8rem;">
+                                <span class="rubric-mark"
+                                    style="background: var(--ink-black); color: var(--beige-light); font-family: 'RetroMono', monospace; font-size: 1.1rem; padding: 0.3rem 0.6rem; border-radius: 4px;">2.4
+                                    – 1.5 Marks</span>
+                            </div>
+                            <p class="rubric-desc">Evaluation is limited, incomplete, or weakly structured. Comparisons
+                                exist but are shallow or insufficiently analysed.</p>
+                        </div>
+                        <div class="rubric-criterion">
+                            <div class="rubric-criterion-header" style="margin-bottom: 0.8rem;">
+                                <span class="rubric-mark"
+                                    style="background: var(--ink-black); color: var(--beige-light); font-family: 'RetroMono', monospace; font-size: 1.1rem; padding: 0.3rem 0.6rem; border-radius: 4px;">1.4
+                                    – 0.0 Marks</span>
+                            </div>
+                            <p class="rubric-desc">Very limited evaluation. Mostly anecdotal examples or screenshots.
+                                Little or no meaningful comparison across variants.</p>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+            <!-- Criterion 5 -->
+            <details class="rubric-card" style="margin: 0; display: block; overflow: visible;">
+                <summary style="padding: 0; cursor: pointer;">
+                    <div class="rubric-header">
+                        <h4 class="rubric-title">5. Report, Code & Reproducibility</h4>
+                        <div class="rubric-total">4 Marks</div>
+                    </div>
+                </summary>
+                <div class="rubric-body">
+                    <p style="font-size: 1.25rem; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin-bottom: 1.5rem;">
+                        Assesses clarity, professionalism, and reproducibility. Higher marks exhibit high structural
+                        quality with failure analyses and thorough documentation allowing code reproduction.</p>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <div class="rubric-criterion">
+                            <div class="rubric-criterion-header" style="margin-bottom: 0.8rem;">
+                                <span class="rubric-mark"
+                                    style="background: var(--ink-black); color: var(--beige-light); font-family: 'RetroMono', monospace; font-size: 1.1rem; padding: 0.3rem 0.6rem; border-radius: 4px;">4.0
+                                    – 3.5 Marks</span>
+                            </div>
+                            <p class="rubric-desc">The report is clear, well structured, and professionally presented.
+                                Code and documentation are reproducible. Results, diagrams, and failure analysis are
+                                strong. Evidence of independent development is provided.</p>
+                        </div>
+                        <div class="rubric-criterion">
+                            <div class="rubric-criterion-header" style="margin-bottom: 0.8rem;">
+                                <span class="rubric-mark"
+                                    style="background: var(--ink-black); color: var(--beige-light); font-family: 'RetroMono', monospace; font-size: 1.1rem; padding: 0.3rem 0.6rem; border-radius: 4px;">3.4
+                                    – 2.5 Marks</span>
+                            </div>
+                            <p class="rubric-desc">The report and code are generally clear and usable. Most required
+                                materials are present. Some aspects of clarity or reproducibility could be improved.</p>
+                        </div>
+                        <div class="rubric-criterion">
+                            <div class="rubric-criterion-header" style="margin-bottom: 0.8rem;">
+                                <span class="rubric-mark"
+                                    style="background: var(--ink-black); color: var(--beige-light); font-family: 'RetroMono', monospace; font-size: 1.1rem; padding: 0.3rem 0.6rem; border-radius: 4px;">2.4
+                                    – 1.5 Marks</span>
+                            </div>
+                            <p class="rubric-desc">The report or repository is incomplete, difficult to follow, or
+                                weakly documented. Reproducibility is limited.</p>
+                        </div>
+                        <div class="rubric-criterion">
+                            <div class="rubric-criterion-header" style="margin-bottom: 0.8rem;">
+                                <span class="rubric-mark"
+                                    style="background: var(--ink-black); color: var(--beige-light); font-family: 'RetroMono', monospace; font-size: 1.1rem; padding: 0.3rem 0.6rem; border-radius: 4px;">1.4
+                                    – 0.0 Marks</span>
+                            </div>
+                            <p class="rubric-desc">Poorly documented submission. Major missing details. Limited evidence
+                                of understanding or independent implementation.</p>
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <div style="border: 2px dashed var(--accent-orange); background: #FFF9E6; padding: 1rem 2rem 1.75rem; margin-top: -1rem; margin-bottom: 3rem; position: relative; text-align: center; border-radius: 8px;">
+            <h2
+                style="font-family: 'RetroSerif', serif; font-size: 2rem; margin-bottom: 0.75rem; border: none; padding: 0; color: var(--accent-orange);">
+                Academic Integrity Note</h2>
+            <p style="font-size: 1.1rem; line-height: 1.55; max-width: 800px; margin: 0 auto 1rem auto; color: #444;">
+                Students may consult public documentation, tutorials, or framework examples for learning purposes.
+                However, <strong style="color: var(--ink-black);">submitted work must reflect their own design,
+                    implementation, and analysis.</strong></p>
+            <p style="font-size: 1.1rem; line-height: 1.55; margin-bottom: 1.25rem; color: #444; max-width: 800px; margin-left: auto; margin-right: auto;">
+                Using the provided teaching demo as a starting scaffold is acceptable only if the final submission shows
+                substantial redesign, independent implementation, and meaningful evaluation.</p>
+            <div style="background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.1); padding: 1.1rem 1.3rem; display: inline-block; text-align: left; border-radius: 6px;">
+                <p
+                    style="font-family: 'RetroMono', monospace; font-weight: bold; margin-bottom: 0.75rem; color: var(--ink-black); font-size: 1.02rem;">
+                    The following may be treated as evidence of non-original work:</p>
+                <ul style="list-style: none; padding: 0; color: #d32f2f; font-weight: 500; font-family: 'RetroMono', monospace; font-size: 1.1rem;"
+                    class="two-col-list">
+                    <li style="margin-bottom: 0.3rem;">⊗ code similarity</li>
+                    <li style="margin-bottom: 0.3rem;">⊗ identical workflow structure</li>
+                    <li style="margin-bottom: 0.3rem;">⊗ copied report language</li>
+                    <li style="margin-bottom: 0.3rem;">⊗ copied prompts</li>
+                    <li style="margin-bottom: 0.3rem;">⊗ copied tool definitions</li>
+                    <li style="margin-bottom: 0;">⊗ missing originality explanations</li>
+                </ul>
+            </div>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 1rem; margin-bottom: 0.5rem; justify-content: flex-start; padding-bottom: 0.5rem; border-bottom: 2px solid var(--ink-black);">
+            <h2
+                style="font-family: 'RetroSerif', serif; font-size: 2.5rem; color: var(--ink-black); margin: 0; padding: 0; border: none;">
+                FAQ</h2>
+            <span style="font-size: 1.1rem; color: #888; font-family: 'RetroMono', monospace;">(Updated: 13 March
+                2026)</span>
+        </div>
+
+        <div style="background: #e2dfcf; border: 2px solid var(--ink-black); border-radius: 8px; padding: 2.5rem; margin-bottom: 4rem; margin-top: 1.5rem; box-shadow: 4px 4px 0 var(--ink-black); position: relative;">
+
+            <div style="margin-bottom: 2rem;">
+                <h3
+                    style="font-family: 'RetroSerif', serif; font-size: 1.4rem; color: var(--ink-black); margin-bottom: 0.8rem; font-weight: normal;">
+                    Can we use the provided teaching demo?</h3>
+                <p style="font-size: 1.1rem; color: #333; line-height: 1.6; margin: 0;">Yes, but only as a learning
+                    scaffold. It is not a submission template.</p>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <h3
+                    style="font-family: 'RetroSerif', serif; font-size: 1.4rem; color: var(--ink-black); margin-bottom: 0.8rem; font-weight: normal;">
+                    What counts as enough originality?</h3>
+                <p style="font-size: 1.1rem; color: #333; line-height: 1.6; margin: 0;">Your submission should clearly
+                    differ in task framing, knowledge base, retrieval design, workflow logic, and evaluation. If your
+                    system still looks essentially like the demo with minor edits, it will not receive credit.</p>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <h3
+                    style="font-family: 'RetroSerif', serif; font-size: 1.4rem; color: var(--ink-black); margin-bottom: 0.8rem; font-weight: normal;">
+                    Do we need quantitative evaluation?</h3>
+                <p style="font-size: 1.1rem; color: #333; line-height: 1.6; margin: 0;">Yes. Showing screenshots or
+                    example conversations alone is not sufficient.</p>
+            </div>
+
+            <div style="margin-bottom: 0;">
+                <h3
+                    style="font-family: 'RetroSerif', serif; font-size: 1.4rem; color: var(--ink-black); margin-bottom: 0.8rem; font-weight: normal;">
+                    Do we need to compare multiple system designs?</h3>
+                <p style="font-size: 1.1rem; color: #333; line-height: 1.6; margin: 0;">Yes. Comparison is a required
+                    part of the assignment.</p>
+            </div>
+
+        </div>
+        <div style="text-align: center; margin-top: 4rem; margin-bottom: 2rem;">
+            <p style="margin-bottom: 0.5rem;">
+                Team: <span style="font-weight: bold;">Danny Wang</span><sup>*</sup>, Yadan Luo<sup>†</sup>,
+                Zhuoxiao Chen, Yan Jiang, Xiangyu Sun, Xuwei Xu, Fengyi Zhang, Zhizhen Zhang.
+            </p>
+            <p style="font-size: 0.9rem; opacity: 0.7;">
+                * Project Credit, † Coordinator.
+            </p>
+            <p style="font-size: 0.9rem; opacity: 0.7;">
+                This content is created based on
+                publicly available sources. All original copyrights remain with their respective
+                owners.
+                <br>
+                &copy; 2026 INFS4205/7205. The University of Queensland.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const textStr = "UQ INFS4205/7205 - A3:\nPersonalised Multimodal Agent System.\n------------------------\nSystem initialized.\nLoading LangGraph agent...\nConnecting to Vector DB...\nReady: Awaiting user query.";
+        const typeSpeed = 40;
+        let charIndex = 0;
+        const targetElement = document.getElementById("typewriter");
+
+        function typeWriterEffect() {
+            if (charIndex < textStr.length) {
+                targetElement.innerHTML += textStr.charAt(charIndex);
+                charIndex++;
+                setTimeout(typeWriterEffect, typeSpeed + (Math.random() * 30));
+            } else {
+                setTimeout(() => {
+                    targetElement.innerHTML = "";
+                    charIndex = 0;
+                    typeWriterEffect();
+                }, 3000);
+            }
+        }
+
+        window.onload = typeWriterEffect;
+    </script>
+</body>
+
+</html>
