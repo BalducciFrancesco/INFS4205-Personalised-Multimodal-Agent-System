@@ -1,5 +1,8 @@
 api-key.txt
 thumbnails
+.vscode/
+
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
