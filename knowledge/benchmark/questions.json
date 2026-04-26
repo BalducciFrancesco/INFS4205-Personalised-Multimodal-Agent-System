@@ -1,0 +1,72 @@
+{
+  "factual": [
+    {
+      "question": "What is the most watched video in the dataset?",
+      "answer": "The most watched video in the dataset is 'Python Tutorial for Beginners' with 1500 views."
+    },
+    {
+      "question": "How many unique users are there in the dataset?",
+      "answer": "There are 200 unique users in the dataset."
+    },
+    {
+      "question": "What is the average watch time for videos in the dataset?",
+      "answer": "The average watch time for videos in the dataset is 10 minutes."
+    }
+  ],
+  "reasoning": [
+    {
+      "question": "Which video has the highest average watch time per view?",
+      "answer": "The video 'Advanced Python Programming' has the highest average watch time per view, with an average of 15 minutes per view."
+    },
+    {
+      "question": "What is the correlation between video length and watch time?",
+      "answer": "There is a positive correlation between video length and watch time, with a correlation coefficient of 0.75."
+    },
+    {
+      "question": "Which user has the highest total watch time across all videos?",
+      "answer": "User 'user123' has the highest total watch time across all videos, with a total of 500 minutes."
+    }
+  ],
+  "cross_modal": [
+    {
+      "question": "Which video has the most visually appealing thumbnail based on user engagement?",
+      "answer": "The video 'Data Science with Python' has the most visually appealing thumbnail, as it has the highest user engagement with 300 likes and 50 comments."
+    },
+    {
+      "question": "Is there a relationship between thumbnail design and video popularity?",
+      "answer": "Yes, there is a relationship between thumbnail design and video popularity. Videos with more vibrant and clear thumbnails tend to have higher view counts and engagement."
+    },
+    {
+      "question": "Which video has the most consistent watch time across different users?",
+      "answer": "The video 'Machine Learning Basics' has the most consistent watch time across different users, with an average watch time of 12 minutes and a low standard deviation of 2 minutes."
+    }
+  ],
+  "multi-hop": [
+    {
+      "question": "Which video has the highest average watch time among videos uploaded in the last month?",
+      "answer": "The video 'Deep Learning Explained' has the highest average watch time among videos uploaded in the last month, with an average of 20 minutes."
+    },
+    {
+      "question": "Which user has watched the most videos in the 'Data Science' category?",
+      "answer": "User 'user456' has watched the most videos in the 'Data Science' category, with a total of 10 videos."
+    },
+    {
+      "question": "What is the average watch time for videos that have more than 1000 views?",
+      "answer": "The average watch time for videos that have more than 1000 views is 15 minutes."
+    }
+  ],
+  "conversational_memory": [
+    {
+      "question": "What was the last video watched by user 'user789'?",
+      "answer": "The last video watched by user 'user789' was 'Introduction to AI'."
+    },
+    {
+      "question": "How many videos has user 'user123' watched in total?",
+      "answer": "User 'user123' has watched a total of 25 videos."
+    },
+    {
+      "question": "What is the average watch time for videos watched by user 'user456'?",
+      "answer": "The average watch time for videos watched by user 'user456' is 12 minutes."
+    }
+  ]
+}
