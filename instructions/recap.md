@@ -92,3 +92,18 @@ If you are an AI assistant reading this file to help the developer:
 - **Codebase:**
   - Clean, documented repository with installation instructions, dependencies, and run instructions.
   - Zip file named `StudentID_Name.zip`.
+
+## Next steps
+
+- [ ] Select the final user/session subset from the YouTube dataset and lock the scope. [web:29]
+- [ ] Define what “rabbit hole,” “bias,” and “missing counter-information” mean for this project. [web:42]
+- [ ] Decide the three systems to compare: baseline, fixed RAG, and full LangGraph agent. [web:16][web:27]
+- [ ] Sketch the LangGraph workflow: state, tools, routing, and outputs. [web:16][web:40]
+- [ ] Create the evaluation query set across factual, cross-modal, analytical, and conversational questions. [web:29][web:42]
+- [ ] Choose the evaluation metrics for quality and efficiency. [web:26][web:29]
+- [ ] Decide the main ablations, such as no routing, no memory, or no multimodal signal. [web:27][web:46]
+- [ ] Build and test the baseline system first. [web:16]
+- [ ] Build and test the fixed RAG system next. [web:42]
+- [ ] Build and test the full LangGraph agent last. [web:16][web:41]
+- [ ] Record results, compare systems, and note key failure cases for the report. [web:26][web:43]
+- [ ] Write the report around problem framing, system design, evaluation, results, and failure analysis. [web:16]
