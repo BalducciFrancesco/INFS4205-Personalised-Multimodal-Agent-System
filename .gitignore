@@ -2,7 +2,7 @@ thumbnails/
 chroma_db/
 .vscode/
 *key.txt
-
+*log*
 
 
 # Byte-compiled / optimized / DLL files
