@@ -1,0 +1,236 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  color-scheme: light dark;
+  --bg: #f4f4f4;
+  --fg: #111;
+  --surface: #fff;
+  --line: #ccc;
+  --accent: #10a37f;
+  /* One height for every control in the bar; textarea grows beyond this */
+  --composer-min: 2.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1c1c;
+    --fg: #e8e8e8;
+    --surface: #2a2a2a;
+    --line: #444;
+  }
+}
+
+body {
+  margin: 24px auto;
+  max-width: 42rem;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  font: 16px system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.title {
+  font-size: 1rem;
+  text-align: center;
+  margin: 0 0 20px 0;
+}
+
+.thread {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-bottom: 10rem;
+}
+
+.thread .msg-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.35rem;
+  max-width: min(100%, 90%);
+}
+
+.thread .msg-row-assistant {
+  align-self: flex-start;
+}
+
+.thread .msg-row-user {
+  align-self: flex-end;
+}
+
+.thread .msg-avatar {
+  flex-shrink: 0;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.thread .bubble {
+  margin: 0;
+  flex: 0 1 auto;
+  min-width: 0;
+  padding: 0.55rem 0.85rem;
+  border-radius: 0.6rem;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.thread .bubble p {
+  margin: 0;
+}
+
+.bubble-user {
+  background: var(--accent);
+  color: #fff;
+}
+
+.bubble-assistant {
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+
+.bubble-assistant-notice {
+  opacity: 0.85;
+  font-size: 0.88rem;
+  box-shadow: none;
+}
+
+.reply {
+  word-break: break-word;
+}
+
+.reply pre,
+.reply code {
+  font-family: ui-monospace, monospace;
+  font-size: 0.9em;
+}
+
+#chat-form {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(42rem, calc(100% - 1rem));
+  display: flex;
+  align-items: flex-end;
+  gap: 0.45rem;
+  padding: 0.5rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+#chat-form * {
+  height: var(--composer-min);
+}
+
+#user-id {
+  flex: 0;
+  width: 4.5rem;
+  padding: 0 0.35rem;
+  border: 1px solid var(--line);
+  border-radius: 0.35rem;
+  background: var(--bg);
+  color: inherit;
+  font: inherit;
+}
+
+/* Center the label text vertically inside the label */
+#chat-form label[for="user-id"] {
+  display: inline-flex;
+  align-items: center; /* vertical center */
+  line-height: 1;
+}
+
+#message {
+  flex: 1;
+  min-width: 0;
+  min-height: var(--composer-min);
+  height: auto;
+  max-height: 12rem;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 0.4rem;
+  background: var(--bg);
+  color: inherit;
+  font: inherit;
+  line-height: 1.4;
+  resize: none;
+}
+
+#chat-form .composer-attach {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: var(--composer-min);
+  border: 1px solid var(--line);
+  padding: 0;
+  margin: 0;
+  border-radius: 0.35rem;
+  cursor: pointer;
+  user-select: none;
+  font: inherit;
+  color: inherit;
+  background: var(--surface);
+  transition: background-color 0.15s;
+}
+
+#chat-form .composer-attach:hover {
+  background: var(--bg);
+}
+
+#chat-form .composer-attach .attach-icon {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  grid-area: 1 / 1;
+}
+
+#chat-form .composer-attach:not(.has-image) .attach-plus {
+  display: flex;
+}
+
+#chat-form .composer-attach.has-image .attach-photo {
+  display: flex;
+}
+
+#chat-form .composer-attach.has-image:hover .attach-photo {
+  display: none;
+}
+
+#chat-form .composer-attach.has-image:hover .attach-clear {
+  display: flex;
+}
+
+#chat-form .composer-attach.has-image:hover {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
+}
+
+#attach-button .attach-icon,
+#attach-button svg {
+  height: auto;
+}
+
+#send-button {
+  padding: 0 0.75rem;
+  border: none;
+  border-radius: 0.4rem;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#send-button:disabled {
+  opacity: 0.5;
+}
