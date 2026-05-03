@@ -7,7 +7,6 @@ const userIdSelect = document.getElementById("user-id");
 const sendButton = document.getElementById("send-button");
 
 let pendingNoticeEl = null;
-/** Single attachment as data URL, or empty string */
 let attachedImage = "";
 
 function escapeHtml(text) {
@@ -77,13 +76,9 @@ attachButton.addEventListener("click", () => {
 
 imageInput.addEventListener("change", () => {
   const file = imageInput.files?.[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = () => {
-    attachedImage = typeof reader.result === "string" ? reader.result : "";
-    syncAttachUi();
-  };
-  reader.readAsDataURL(file);
+  if (file) {
+    attachedImage = URL.createObjectURL(file);
+  }
 });
 
 appendBubble(
@@ -133,16 +128,19 @@ chatForm.addEventListener("submit", async (event) => {
       "assistant",
     );
 
+    const formData = new FormData();
+    formData.append("thread_id", "");
+    formData.append("user_id", userIdSelect.value);
+    formData.append("message", text);
+    if (imageInput.files[0]) {
+      formData.append("image", imageInput.files[0]);
+    }
+
     const response = await fetch("/api/chat", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        thread_id: "",
-        user_id: Number(userIdSelect.value),
-        message: text,
-        image: attachedImage,
-      }),
+      body: formData
     });
+
     const data = await response.json();
     if (!response.ok) throw new Error(data.detail || "Error");
 
