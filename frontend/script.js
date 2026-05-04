@@ -79,6 +79,7 @@ imageInput.addEventListener("change", () => {
   const file = imageInput.files?.[0];
   if (file) {
     attachedImage = URL.createObjectURL(file);
+    syncAttachUi();
   }
 });
 
@@ -122,7 +123,10 @@ chatForm.addEventListener("submit", async (event) => {
   pendingNoticeEl?.remove();
 
   try {
-    appendBubble("bubble bubble-user", `<p>${escapeHtml(text)}</p>`, "user");
+    const userBubbleHtml = attachedImage
+      ? `<p>${escapeHtml(text)}</p><img src="${attachedImage}" style="max-width: 100%; margin-top: 0.5rem; border-radius: 0.4rem;" alt="Attached image">`
+      : `<p>${escapeHtml(text)}</p>`;
+    appendBubble("bubble bubble-user", userBubbleHtml, "user");
     pendingNoticeEl = appendBubble(
       "bubble bubble-assistant bubble-assistant-notice",
       `<p>${escapeHtml("Sending…")}</p>`,
