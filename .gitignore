@@ -3,6 +3,7 @@ chroma_db/
 .vscode/
 *key.txt
 *log*
+*temp*
 
 
 # Byte-compiled / optimized / DLL files

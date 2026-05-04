@@ -8,6 +8,7 @@ const sendButton = document.getElementById("send-button");
 
 let pendingNoticeEl = null;
 let attachedImage = "";
+let currentThreadId = "";
 
 function escapeHtml(text) {
   const div = document.createElement("div");
@@ -129,7 +130,7 @@ chatForm.addEventListener("submit", async (event) => {
     );
 
     const formData = new FormData();
-    formData.append("thread_id", "");
+    formData.append("thread_id", currentThreadId);
     formData.append("user_id", userIdSelect.value);
     formData.append("message", text);
     if (imageInput.files[0]) {
@@ -143,6 +144,11 @@ chatForm.addEventListener("submit", async (event) => {
 
     const data = await response.json();
     if (!response.ok) throw new Error(data.detail || "Error");
+
+    // Persist thread id returned by BE for subsequent requests.
+    if (typeof data.thread_id === "string" && data.thread_id.length > 0) {
+      currentThreadId = data.thread_id;
+    }
 
     pendingNoticeEl.remove();
     pendingNoticeEl = null;
