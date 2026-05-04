@@ -23,29 +23,42 @@
 }
 
 body {
-  margin: 24px auto;
-  max-width: 42rem;
-  height: 100dvh;
   display: flex;
   flex-direction: column;
+  margin: 24px auto;
+  max-width: 44rem;
+  min-height: 93vh;
   font: 16px system-ui, sans-serif;
   background: var(--bg);
   color: var(--fg);
 }
 
 .title {
+  text-align: center;
+}
+
+.title h1 {
   font-size: 1rem;
   text-align: center;
-  margin: 0 0 20px 0;
+  margin: 0;
+}
+
+.title small {
+  display: block;
+  margin-top: 0.25rem;
+}
+
+.title a {
+  color: var(--accent);
 }
 
 .thread {
   flex: 1;
-  overflow: auto;
+  overflow: visible;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  padding-bottom: 10rem;
+  gap: 1rem;
+  padding: 2rem 0;
 }
 
 .thread .msg-row {
@@ -79,6 +92,15 @@ body {
   line-height: 1.45;
 }
 
+.thread .bubble img {
+  max-width: 150px;
+  max-height: 150px;
+  margin-top: 0.5rem;
+  display: block;
+  object-fit: contain;
+  border-radius: 0.25rem;
+}
+
 .thread .bubble p {
   margin: 0;
 }
@@ -99,10 +121,6 @@ body {
   box-shadow: none;
 }
 
-.reply {
-  word-break: break-word;
-}
-
 .reply pre,
 .reply code {
   font-family: ui-monospace, monospace;
@@ -110,11 +128,8 @@ body {
 }
 
 #chat-form {
-  position: fixed;
+  position: sticky;
   bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(42rem, calc(100% - 1rem));
   display: flex;
   align-items: flex-end;
   gap: 0.45rem;

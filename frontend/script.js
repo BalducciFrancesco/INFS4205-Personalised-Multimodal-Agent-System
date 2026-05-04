@@ -16,7 +16,6 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
-/** Optional `side` wraps the bubble in `.msg-row` with avatar beside it. */
 function appendBubble(classNames, html, side) {
   const article = document.createElement("article");
   article.className = classNames;
@@ -29,8 +28,7 @@ function appendBubble(classNames, html, side) {
   }
 
   const row = document.createElement("div");
-  row.className =
-    side === "user" ? "msg-row msg-row-user" : "msg-row msg-row-assistant";
+  row.className = side === "user" ? "msg-row msg-row-user" : "msg-row msg-row-assistant";
 
   const avatar = document.createElement("span");
   avatar.className = "msg-avatar";
@@ -85,7 +83,7 @@ imageInput.addEventListener("change", () => {
 
 appendBubble(
   "bubble bubble-assistant",
-  "<p>How can I help you today?</p>",
+  "How can I help you today?",
   "assistant",
 );
 
@@ -111,10 +109,6 @@ fetch("/api/users")
       .join("");
     userIdSelect.disabled = false;
   })
-  .catch(() => {
-    userIdSelect.innerHTML = "<option value='25' selected>25</option>";
-    userIdSelect.disabled = false;
-  });
 
 chatForm.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -124,12 +118,12 @@ chatForm.addEventListener("submit", async (event) => {
 
   try {
     const userBubbleHtml = attachedImage
-      ? `<p>${escapeHtml(text)}</p><img src="${attachedImage}" style="max-width: 100%; margin-top: 0.5rem; border-radius: 0.4rem;" alt="Attached image">`
-      : `<p>${escapeHtml(text)}</p>`;
+      ? escapeHtml(text) + `<img src="${attachedImage}" style="border-radius: 0.4rem;" alt="Attached image">`
+      : escapeHtml(text);
     appendBubble("bubble bubble-user", userBubbleHtml, "user");
     pendingNoticeEl = appendBubble(
       "bubble bubble-assistant bubble-assistant-notice",
-      `<p>${escapeHtml("Sending…")}</p>`,
+      escapeHtml("Sending…"),
       "assistant",
     );
 
@@ -169,7 +163,7 @@ chatForm.addEventListener("submit", async (event) => {
     pendingNoticeEl = null;
     appendBubble(
       "bubble bubble-assistant bubble-assistant-notice",
-      `<p>${escapeHtml(error.message || "Failed")}</p>`,
+      escapeHtml(error.message || "Failed"),
       "assistant",
     );
   } finally {
