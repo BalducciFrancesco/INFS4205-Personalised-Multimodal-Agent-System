@@ -1,0 +1,74 @@
+{
+  "factual": [
+    {
+      "question": "What is the exact watch date and time for the video titled 'Why Conservatives Are Under Siege'?",
+      "answer": "2014-07-15 08:22:33"
+    },
+    {
+      "question": "Which video ID corresponds to the video 'EXPOSED: The 5G Danger Nobody Talks About'?",
+      "answer": "5y6Uv08YAGi"
+    },
+    {
+      "question": "What is the title of the video watched on 2018-09-11 at 15:42:17?",
+      "answer": "Why small biases matter"
+    },
+    {
+      "question": "Which title has the video with ID ZawPGrDQ4Kb?",
+      "answer": "Climate Change Lies Exposed"
+    }
+  ],
+  "cross_modal": [
+    {
+      "question": "Based on the thumbnail at ../knowledge/thumbnails/ZawPGrDQ4Kb which video ID of the user's watch history is the most similar?",
+      "answer": "ZawPGrDQ4Kb"
+    },
+    {
+      "question": "Based on the thumbnail at ../knowledge/thumbnails/ZawPGrDQ4Kb which video title of the user's watch history is the most similar?",
+      "answer": "Climate Change Lies Exposed"
+    },
+    {
+      "question": "Based on the title 'Why liberals keep missing this point' which video ID of the user's watch history is the most similar?",
+      "answer": "ZawPGrDQ4Kb"
+    },
+    {
+        "question": "Based on the title 'Why liberals keep missing this point' which video title of the user's watch history is the most similar?",
+        "answer": "Climate Change Lies Exposed"
+    }
+  ],
+  "analytical": [
+    {
+    "question": "What recurring topics does the user's watch history reveal based on the most recently watched 50 videos?",
+    "answer": "Two recurring themes: (1) kids cartoons and nursery rhymes (Ben 10, StoryBots, Wiggles, Disney Kids), and (2) media/cognition/bias topics (The Subtle Effects of Repetition, How Exposure Shapes Beliefs, Why People Gravitate Toward Familiar Ideas, Why small biases matter)."
+    },
+    {
+      "question": "What polarizing patterns, if any, does the user's watch history reveal based on the least recently watched 50 videos?",
+      "answer": "Repeated anti-liberal framing in titles, e.g., 'Why Liberals Destroy Everything Good', 'Why Liberals Hate Tradition', 'Why liberals keep missing this point', 'Why Liberals Destroy Culture', and 'Why Liberals Are Destroying Tradition'."
+    },
+    {
+      "question": "What political biases, if any, does the user's watch history reveal based on the the most recently watched 50 videos?",
+      "answer": "No clear partisan political bias. The most recent 50 are dominated by kids cartoons/children's songs and general media/cognition commentary (e.g., The Role of Framing in Everyday News, Why Content Feeds Reinforce Views, The Gradual Shift in Online Discourse, Why Small Biases Matter Over Time)."
+    },
+    {
+      "question": "Which health-related misinformation topics, if any, does the user's watch history reveal based on the least recently watched 50 videos?",
+      "answer": "Vaccine misinformation, e.g., 'The Vaccine Hoax They Don't Want You to Know' and 'The Vaccine Truth Finally Revealed'."
+    }
+  ],
+  "conversational": [
+    {
+      "question": "What is its video ID?",
+      "answer": "cQkxYVPZciw."
+    },
+    {
+      "question": "What is its video ID?",
+      "answer": "The Vaccine Hoax They Don't Want You to Know."
+    },
+    {
+      "question": "Can you find a similar video to that, in my watch history?",
+      "answer": "The Vaccine Hoax They Don't Want You to Know."
+    },
+    {
+      "question": "Do you think those videos present misinformation?",
+      "answer": "The Vaccine Hoax They Don't Want You to Know."
+    }
+  ]
+}
