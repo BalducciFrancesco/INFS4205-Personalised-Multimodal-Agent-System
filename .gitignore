@@ -3,6 +3,7 @@ chroma_db/
 .vscode/
 *key.txt
 *temp*
+pyproject.toml
 
 
 # Byte-compiled / optimized / DLL files
