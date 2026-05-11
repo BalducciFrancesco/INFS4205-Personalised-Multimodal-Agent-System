@@ -97,16 +97,10 @@ for collection in [collection_text, collection_hybrid]:
 # --------------------------------
 
 with open(REPO_DIR / "llm-api-key.txt") as f:
-    # llm = ChatGroq(
-    #     model="llama-3.3-70b-versatile",
-    #     api_key=SecretStr(f.readline().strip()),
-    #     temperature=0,
-    # )
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash-lite",
-        temperature=0,
+    llm = ChatGroq(
+        model="llama-3.3-70b-versatile",
         api_key=SecretStr(f.readline().strip()),
-        convert_system_message_to_human=True,
+        temperature=0,
     )
 
 # --------------------------------

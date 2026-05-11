@@ -10,10 +10,15 @@ from model_commons import *
 class WatchItem:
     video_id: str
     video_title: str
+    timestamp: str  # ISO format
 
     @classmethod
     def from_row(cls, row) -> "WatchItem":
-        return cls(video_id=row["video_id"], video_title=row["video_title"])
+        return cls(
+            video_id=row["video_id"],
+            video_title=row["video_title"],
+            timestamp=row["watch_date"],
+        )
 
     def __repr__(self):  # json
         return str(asdict(self))
