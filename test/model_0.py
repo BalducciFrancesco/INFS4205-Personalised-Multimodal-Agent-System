@@ -16,6 +16,5 @@ agent = create_agent(
     llm.model_copy(),
     context_schema=AgentContext,
     system_prompt=SYSTEM_PROMPT,
-    middleware=MIDDLEWARE,
     checkpointer=CHECKPOINTER,
 )

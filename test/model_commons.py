@@ -141,11 +141,6 @@ class BiasProfile:
 class AgentContext:  # context (static configuration)
     user_id: int
 
-
-MIDDLEWARE: Sequence[AgentMiddleware[Any, Any, Any]] = [
-    ToolCallLimitMiddleware(run_limit=1)  # Only one tool call per turn
-]  
-
 CHECKPOINTER = InMemorySaver(  # chat history
     serde=JsonPlusSerializer(
         allowed_msgpack_modules=[
