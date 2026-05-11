@@ -1,15 +1,18 @@
-from langchain_google_genai import ChatGoogleGenerativeAI
+import json
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Literal, TypedDict, Sequence
+from typing import Any, Literal, Sequence, TypedDict
 
 import chromadb
 import numpy as np
 import pandas as pd
 import torch
-from langchain.agents.middleware import ToolCallLimitMiddleware, AgentMiddleware
-from langchain.messages import ToolMessage
+from langchain.agents import AgentState as BaseAgentState
+from langchain.agents import create_agent
+from langchain.agents.middleware import AgentMiddleware, ToolCallLimitMiddleware
+from langchain.messages import HumanMessage, ToolMessage
 from langchain.tools import ToolRuntime, tool
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
@@ -93,6 +96,37 @@ for collection in [collection_text, collection_hybrid]:
 
 
 # --------------------------------
+# Domain-specific types
+# --------------------------------
+
+@dataclass
+class WatchItem:
+    video_id: str
+    video_title: str
+    timestamp: str  # ISO format
+
+    @property
+    def thumbnail_url(self) -> str:
+        return f"./knowledge/thumbnails/{self.video_id}.jpg"
+
+    @classmethod
+    def from_row(cls, row) -> "WatchItem":
+        return cls(
+            video_id=row["video_id"],
+            video_title=row["video_title"],
+            timestamp=row["watch_date"],
+        )
+
+    def __repr__(self):  # json
+        d = asdict(self)
+        d["thumbnail_url"] = self.thumbnail_url
+        return str(d)
+
+class AgentState(BaseAgentState):   # tool-managed state (short-term memory)
+    watch_history: list[WatchItem]  # @dataclass
+
+
+# --------------------------------
 # LLM
 # --------------------------------
 
@@ -149,3 +183,129 @@ CHECKPOINTER = InMemorySaver(  # chat history
         ]
     )
 )
+
+
+# --------------------------------
+# Agent tools
+# --------------------------------
+
+@tool
+def find_similar_videos_text(
+    title: str, limit: int, runtime: ToolRuntime[AgentContext, AgentState]
+) -> list[WatchItem]:
+    """Invokes the VectorDB to find similar videos by title.
+    Args:
+        title (str): A title to find similar videos for.
+        limit (int): The number of similar videos to return. Defaults to 5.
+    Returns:
+        list[WatchItem]: A list of similar videos
+    """
+
+    # Query the vector database for similar videos
+    similar_ids = collection_text.query(                    # <-- uses text-only collection
+        query_embeddings=embed_text(title),
+        n_results=limit or 5,
+        where={"user_id": runtime.context.user_id}
+    ).get("ids", [[]])[0]  
+
+    return (
+        df[df["video_id"].isin(similar_ids)]
+        .apply(WatchItem.from_row, axis=1)
+        .tolist()
+    )
+
+@tool
+def find_similar_videos_hybrid(
+    title_or_thumbnail_url: str, limit: int, runtime: ToolRuntime[AgentContext, AgentState]
+) -> list[WatchItem]:
+    """Invokes the VectorDB to find similar videos by title and/or thumbnail.
+    Args:
+        title_or_thumbnail_url (str): A title or thumbnail (local file path) to find similar videos for.
+        limit (int): The number of similar videos to return. Defaults to 5.
+    Returns:
+        list[WatchItem]: A list of similar videos
+    """
+
+    # Embed the input title and thumbnail
+    if title_or_thumbnail_url.lower().endswith((".jpg", ".jpeg", ".png")):
+        # treat as thumbnail path
+        query_vec = embed_image(Image.open(title_or_thumbnail_url))
+    else:
+        # treat as text
+        query_vec = embed_text(title_or_thumbnail_url)
+
+    # Query the vector database for similar videos
+    similar_ids = collection_hybrid.query(                    # <-- uses hybrid collection
+        query_embeddings=query_vec,
+        n_results=limit or 5,
+        where={"user_id": runtime.context.user_id}
+    ).get("ids", [[]])[0]  
+
+    return (
+        df[df["video_id"].isin(similar_ids)]
+        .apply(WatchItem.from_row, axis=1)
+        .tolist()
+    )
+
+@tool
+def retrieve_session(
+    sort_asc: bool, limit: int, runtime: ToolRuntime[AgentContext, AgentState]
+) -> Command:
+    """Loads a user's watch session in the agent state.
+    Args:
+        sort_asc (bool): sort oldest first if True
+        limit (int): maximum number of videos to retrieve
+    Returns:
+        Command: Updates the agent state with the retrieved watch history.
+    """
+    df = pd.read_csv(CSV_PATH)
+    df = df[df["user_id"] == runtime.context.user_id]  # Filter by user ID from state
+    df = df.sort_values("watch_date", ascending=sort_asc)
+    df = df.head(limit) if limit else df
+    result = df.apply(
+        WatchItem.from_row, axis=1
+    ).tolist()  # Convert to WatchItem list
+
+    return Command(
+        update={
+            "watch_history": result,  # Update agent state with the retrieved watch history
+            "messages": [
+                ToolMessage(content=str(result), tool_call_id=runtime.tool_call_id)
+            ],
+        },
+    )
+
+
+@tool
+def analyze_bias_profile(runtime: ToolRuntime[AgentContext, AgentState]) -> Command:
+    """ Analyzes a user's watch history and loads it in the agent state. 
+    Requires a previous run of retrieve_session to have populated the watch_history in the state.
+    Returns:
+        Command: Updates the agent state with the bias profile.
+    """
+    watch_history = runtime.state["watch_history"]  # FIXME dict, not object?
+
+    if not watch_history:
+        return Command(
+            update = {
+                "messages": [ToolMessage(
+                    content="No watch history found. Please run retrieve_session first.",
+                    tool_call_id=runtime.tool_call_id
+                )],
+            },
+        )
+    
+    global bias_analyzer_agent  # ty:ignore[unresolved-global]
+    prompt = HumanMessage(content="Analyze this watch history for bias: " + str(watch_history))
+    raw = bias_analyzer_agent.invoke({ "messages": [prompt] })  # type: ignore
+    result: BiasProfile = raw["structured_response"]    # FIXME dict, not object?
+
+    return Command(
+        update = { 
+            "bias_profile": result,
+            "messages": [ToolMessage(
+                content=json.dumps(asdict(result), ensure_ascii=False), # bug! can't use str(...) as would use default __rept__
+                tool_call_id=runtime.tool_call_id
+            )],
+        },
+    )

@@ -1,58 +1,4 @@
-from typing import Annotated
-
-from langchain.agents import create_agent, AgentState as BaseAgentState
-from langchain_core.messages import AnyMessage
-from langgraph.graph.message import add_messages
 from model_commons import *
-
-
-@dataclass
-class WatchItem:
-    video_id: str
-    video_title: str
-    timestamp: str  # ISO format
-
-    @classmethod
-    def from_row(cls, row) -> "WatchItem":
-        return cls(
-            video_id=row["video_id"],
-            video_title=row["video_title"],
-            timestamp=row["watch_date"],
-        )
-
-    def __repr__(self):  # json
-        return str(asdict(self))
-
-class AgentState(BaseAgentState):  # tool-managed state (short-term memory)
-    watch_history: list[WatchItem]  # @dataclass
-
-@tool
-def retrieve_session(
-    sort_asc: bool, limit: int, runtime: ToolRuntime[AgentContext, AgentState]
-) -> Command:
-    """Loads a user's watch session in the agent state.
-    Args:
-        sort_asc (bool): sort oldest first if True
-        limit (int): maximum number of videos to retrieve
-    Returns:
-        Command: Updates the agent state with the retrieved watch history.
-    """
-    df = pd.read_csv(CSV_PATH)
-    df = df[df["user_id"] == runtime.context.user_id]  # Filter by user ID from state
-    df = df.sort_values("watch_date", ascending=sort_asc)
-    df = df.head(limit) if limit else df
-    result = df.apply(
-        WatchItem.from_row, axis=1
-    ).tolist()  # Convert to WatchItem list
-
-    return Command(
-        update={
-            "watch_history": result,  # Update agent state with the retrieved watch history
-            "messages": [
-                ToolMessage(content=str(result), tool_call_id=runtime.tool_call_id)
-            ],
-        },
-    )
 
 
 SYSTEM_PROMPT = """
@@ -69,7 +15,7 @@ You are a YouTube watch-history analysis agent focused on bias, polarization, se
 
 agent = create_agent(
     llm.model_copy(),
-    tools=[retrieve_session],
+    tools=[retrieve_session, find_similar_videos_text],
     state_schema=AgentState,
     context_schema=AgentContext,
     system_prompt=SYSTEM_PROMPT,
