@@ -8,7 +8,6 @@ import pandas as pd
 import torch
 from langchain.agents import AgentState as BaseAgentState
 from langchain.agents import create_agent
-from langchain.agents.middleware import AgentMiddleware, ToolCallLimitMiddleware
 from langchain.messages import HumanMessage, ToolMessage
 from langchain.tools import ToolRuntime, tool
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -19,6 +18,7 @@ from langgraph.types import Command
 from PIL import Image
 from pydantic import SecretStr, BaseModel
 from tqdm import tqdm
+from langchain_openai import ChatOpenAI
 from transformers import CLIPModel, CLIPProcessor
 
 # --------------------------------
@@ -129,10 +129,8 @@ class AgentState(BaseAgentState):   # tool-managed state (short-term memory)
 # --------------------------------
 
 with open(REPO_DIR / "llm-api-key.txt") as f:
-    llm = ChatGroq(
-        # model="llama-3.3-70b-versatile",
-        # model="qwen/qwen3-32b",
-        model="openai/gpt-oss-120b",
+    llm = ChatOpenAI(
+        model="gpt-4o-mini",
         api_key=SecretStr(f.readline().strip()),
         temperature=0,
     )
@@ -218,6 +216,7 @@ def find_similar_videos_hybrid(
     title_or_thumbnail_url: str, limit: int, runtime: ToolRuntime[AgentContext, AgentState]
 ) -> list[WatchItem]:
     """Invokes the VectorDB to find similar videos by title and/or thumbnail.
+    Likely the first result is going to be the query video itself, so the second result is the truly "most similar" video.
     Args:
         title_or_thumbnail_url (str): A title or thumbnail (local file path) to find similar videos for.
         limit (int): The number of similar videos to return. Defaults to 5.
@@ -271,40 +270,5 @@ def retrieve_session(
             "messages": [
                 ToolMessage(content=str(result), tool_call_id=runtime.tool_call_id)
             ],
-        },
-    )
-
-
-@tool
-def analyze_bias_profile(runtime: ToolRuntime[AgentContext, AgentState]) -> Command:
-    """ Analyzes a user's watch history and loads it in the agent state. 
-    Requires a previous run of retrieve_session to have populated the watch_history in the state.
-    Returns:
-        Command: Updates the agent state with the bias profile.
-    """
-    watch_history = runtime.state["watch_history"]  # FIXME dict, not object?
-
-    if not watch_history:
-        return Command(
-            update = {
-                "messages": [ToolMessage(
-                    content="No watch history found. Please run retrieve_session first.",
-                    tool_call_id=runtime.tool_call_id
-                )],
-            },
-        )
-    
-    global bias_analyzer_agent  # ty:ignore[unresolved-global]
-    prompt = HumanMessage(content="Analyze this watch history for bias: " + str(watch_history))
-    raw = bias_analyzer_agent.invoke({ "messages": [prompt] })  # type: ignore
-    result: BiasProfile = raw["structured_response"]    # FIXME dict, not object?
-
-    return Command(
-        update = { 
-            "bias_profile": result,
-            "messages": [ToolMessage(
-                content=str(result), # bug! can't use str(...) as would use default __repr__
-                tool_call_id=runtime.tool_call_id
-            )],
         },
     )

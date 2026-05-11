@@ -1,5 +1,38 @@
 from model_commons import *
 
+@tool
+def analyze_bias_profile(runtime: ToolRuntime[AgentContext, AgentState]) -> Command:
+    """ Analyzes a user's watch history and loads it in the agent state. 
+    Requires a previous run of retrieve_session to have populated the watch_history in the state.
+    Returns:
+        Command: Updates the agent state with the bias profile.
+    """
+    watch_history = runtime.state["watch_history"]
+
+    if not watch_history:
+        return Command(
+            update = {
+                "messages": [ToolMessage(
+                    content="No watch history found. Please run retrieve_session first.",
+                    tool_call_id=runtime.tool_call_id
+                )],
+            },
+        )
+    
+    global bias_analyzer_agent
+    prompt = HumanMessage(content="Analyze this watch history for bias: " + str(watch_history))
+    raw = bias_analyzer_agent.invoke({ "messages": [prompt] })
+    result: BiasProfile = raw["structured_response"]  
+
+    return Command(
+        update = { 
+            "bias_profile": result,
+            "messages": [ToolMessage(
+                content=str(result), # bug! can't use str(...) as would use default __repr__
+                tool_call_id=runtime.tool_call_id
+            )],
+        },
+    )
 
 SYSTEM_PROMPT = """
 You are a YouTube watch-history analysis agent focused on bias, polarization, sensationalism, clickbait, emotional tone, and rabbit-hole effects.
@@ -44,3 +77,4 @@ bias_analyzer_agent = create_agent(
     system_prompt=BIAS_AGENT_PROMPT,
     response_format=BiasProfile,    
 )
+
