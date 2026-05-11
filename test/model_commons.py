@@ -2,7 +2,6 @@ import json
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Literal, Sequence, TypedDict
-
 import chromadb
 import numpy as np
 import pandas as pd
@@ -18,7 +17,7 @@ from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
 from langgraph.types import Command
 from PIL import Image
-from pydantic import SecretStr
+from pydantic import SecretStr, BaseModel
 from tqdm import tqdm
 from transformers import CLIPModel, CLIPProcessor
 
@@ -99,8 +98,7 @@ for collection in [collection_text, collection_hybrid]:
 # Domain-specific types
 # --------------------------------
 
-@dataclass
-class WatchItem:
+class WatchItem(BaseModel):
     video_id: str
     video_title: str
     timestamp: str  # ISO format
@@ -117,10 +115,10 @@ class WatchItem:
             timestamp=row["watch_date"],
         )
 
-    def __repr__(self):  # json
-        d = asdict(self)
+    def __repr__(self): # json
+        d = self.model_dump()
         d["thumbnail_url"] = self.thumbnail_url
-        return str(d)
+        return json.dumps(d, ensure_ascii=False)
 
 class AgentState(BaseAgentState):   # tool-managed state (short-term memory)
     watch_history: list[WatchItem]  # @dataclass
@@ -132,7 +130,9 @@ class AgentState(BaseAgentState):   # tool-managed state (short-term memory)
 
 with open(REPO_DIR / "llm-api-key.txt") as f:
     llm = ChatGroq(
-        model="llama-3.3-70b-versatile",
+        # model="llama-3.3-70b-versatile",
+        # model="qwen/qwen3-32b",
+        model="openai/gpt-oss-120b",
         api_key=SecretStr(f.readline().strip()),
         temperature=0,
     )
@@ -142,8 +142,7 @@ with open(REPO_DIR / "llm-api-key.txt") as f:
 # --------------------------------
 
 
-@dataclass
-class BiasProfile:
+class BiasProfile(BaseModel):
     emotional_tone: Literal["low", "medium", "high"]
     sensationalism: Literal["low", "medium", "high"]
     topical_narrowing: Literal["low", "medium", "high"]
@@ -163,7 +162,7 @@ class BiasProfile:
     )
 
     def __repr__(self):
-        return str(asdict(self))
+        return json.dumps(self.model_dump(), ensure_ascii=False)
 
 
 # --------------------------------
@@ -178,8 +177,8 @@ class AgentContext:  # context (static configuration)
 CHECKPOINTER = InMemorySaver(  # chat history
     serde=JsonPlusSerializer(
         allowed_msgpack_modules=[
-            ("__main__", "WatchItem"),
-            ("__main__", "BiasProfile"),
+            ("model_commons", "WatchItem"),
+            ("model_commons", "BiasProfile"),
         ]
     )
 )
@@ -304,7 +303,7 @@ def analyze_bias_profile(runtime: ToolRuntime[AgentContext, AgentState]) -> Comm
         update = { 
             "bias_profile": result,
             "messages": [ToolMessage(
-                content=json.dumps(asdict(result), ensure_ascii=False), # bug! can't use str(...) as would use default __rept__
+                content=str(result), # bug! can't use str(...) as would use default __repr__
                 tool_call_id=runtime.tool_call_id
             )],
         },
