@@ -113,7 +113,11 @@ fetch("/api/users")
 chatForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const text = messageEl.value.trim();
+
+  if (!text || sendButton.disabled) return;
+
   sendButton.disabled = true;
+  messageEl.value = "";
   pendingNoticeEl?.remove();
 
   try {
@@ -123,7 +127,7 @@ chatForm.addEventListener("submit", async (event) => {
     appendBubble("bubble bubble-user", userBubbleHtml, "user");
     pendingNoticeEl = appendBubble(
       "bubble bubble-assistant bubble-assistant-notice",
-      escapeHtml("Sending…"),
+      escapeHtml("Rock is thinking (???) …"),
       "assistant",
     );
 
@@ -155,7 +159,6 @@ chatForm.addEventListener("submit", async (event) => {
       `<div class="reply">${data.html_response}</div>`,
       "assistant",
     );
-    messageEl.value = "";
     clearAttachment();
     fitMessageHeight();
   } catch (error) {
