@@ -1,4 +1,4 @@
-from .model_commons import *
+from model_commons import *
 
 
 SYSTEM_PROMPT = """

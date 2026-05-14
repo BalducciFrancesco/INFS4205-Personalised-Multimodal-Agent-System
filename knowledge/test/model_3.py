@@ -1,4 +1,4 @@
-from .model_commons import *
+from model_commons import *
 
 @tool
 def analyze_bias_profile(runtime: ToolRuntime[AgentContext, AgentState]) -> Command:

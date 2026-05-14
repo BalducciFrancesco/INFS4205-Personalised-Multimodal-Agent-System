@@ -1,4 +1,4 @@
-from .model_commons import *
+from model_commons import *
 
 SYSTEM_PROMPT = """
 You are a YouTube watch-history analysis agent focused on bias, polarization, sensationalism, clickbait, emotional tone, and rabbit-hole effects.
