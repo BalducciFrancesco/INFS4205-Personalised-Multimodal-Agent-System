@@ -26,7 +26,7 @@
         "Video ID for “SkiVel”: F8wJdvXK5yU",
         "Video ID for “SkiVel”: **F8wJdvXK5yU**"
       ],
-      "usage": [1048, 388, 424, 450],
+      "usage": [2096, 776, 848, 900],
       "evaluations": [
         { "score": 1.0, "reason": "Exact match with the golden answer." },
         { "score": 0.8, "reason": "Correct answer with extra text." },
@@ -43,7 +43,7 @@
         "Title watched on 2018-09-11 at 15:42:17: “Why small biases matter”",
         "Title watched on 2018-09-11 at 15:42:17: **Why small biases matter**"
       ],
-      "usage": [1048, 388, 424, 450],
+      "usage": [3144, 1164, 1272, 1350],
       "evaluations": [
         { "score": 1.0, "reason": "Exact match with the golden answer." },
         { "score": 0.8, "reason": "Correct answer but includes extra text." },
@@ -60,7 +60,7 @@
         "Title for video ID 8DUSSbJPfwU: “The system nudges more than you think”",
         "Title for video ID 8DUSSbJPfwU: **The system nudges more than you think**"
       ],
-      "usage": [1048, 388, 424, 450],
+      "usage": [4192, 1552, 1696, 1800],
       "evaluations": [
         { "score": 1.0, "reason": "Exact match with the golden answer." },
         { "score": 0.7, "reason": "Correct answer but includes extra text." },
